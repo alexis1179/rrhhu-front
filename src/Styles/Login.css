@@ -1,0 +1,33 @@
+.login-container{
+    display: flex;
+    place-content: center;
+    place-items: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgb(21, 35, 117);
+}
+
+.login-title{
+    font-size: 3.2em;
+    line-height: 1.1;
+    color: blue;
+    place-self: center;
+}
+
+.login-form{
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255);
+    border-radius: 8px;
+    padding: 2em;
+    height: fit-content;
+    width:fit-content;
+}
+
+.login-item{
+    margin: 2% !important;
+    padding: 1%;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+}
