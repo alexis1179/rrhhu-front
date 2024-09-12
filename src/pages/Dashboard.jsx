@@ -9,11 +9,9 @@ export default function Dashboard() {
 
     return <>
         <div className="dashboard">
-            <section className="side-section">
-                <Sidebar />
-            </section>
+            <Sidebar/>
             <div className="menu">
-                <Grid container>
+                <Grid container spacing={3}>
                     <Grid item xs={12} >
                         <div className="dashboard-title">
                         <Typography

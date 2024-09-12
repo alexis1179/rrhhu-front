@@ -1,0 +1,30 @@
+.contenido{
+    width: 100vw;
+    margin-top: 5px;
+    display: flex;
+    place-content: center;
+    place-items: center;
+}
+
+.form{
+    margin-left: 15vw;
+    padding: 15px;
+    height: 100%;
+    width: 85vw;
+    text-align: center;
+}
+
+.input{
+    width: 100%;
+    padding: 2%;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+}
+.buttons{
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+    justify-content: center;
+    align-items: center;
+}

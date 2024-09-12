@@ -4,6 +4,7 @@ import { Button, Icon, TextField, Typography } from "@mui/material";
 import { Groups } from "@mui/icons-material";
 
 import '../../Styles/Dashboard.css'
+import { useNavigate } from "react-router-dom";
 
 export default function GestionarUsuarios() {
     const columns =[
@@ -16,16 +17,16 @@ export default function GestionarUsuarios() {
 
     ]
 
+    const navigate = useNavigate();
+
     return <>
         <div className="dashboard">
-            <section className="side-section">
-                <Sidebar />
-            </section>
+            <Sidebar/>
             <div className="menu">
                 <div className="search-bar">
                     <div className="search-left">
                         <Groups fontSize="large" className="icon" />
-                        <Typography variant="h4" className="search-title">USUARIOS CREADOS</Typography>
+                        <Typography variant="h5" className="search-title">USUARIOS CREADOS</Typography>
                     </div>
                     <div className="search-right">
                         <TextField label="Buscar usuario por ID" variant="outlined" type="search" />
@@ -34,7 +35,7 @@ export default function GestionarUsuarios() {
                 </div>
 
                 <div className="button-bar">
-                    <Button variant="contained" color="success">Nuevo Usuario</Button>
+                    <Button variant="contained" color="success" onClick={()=>navigate("/registrar-usuario")}>Nuevo Usuario</Button>
                     <Button variant="contained" color="error">Eliminar Usuario</Button>
                 </div>
 

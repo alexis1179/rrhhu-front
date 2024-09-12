@@ -1,0 +1,47 @@
+.side-section {
+    display: flex;
+    justify-content: space-between;
+    width: 100vw;
+    height: 100px;
+    background-color: #03071e;
+    color: white;
+}
+
+.contenido {
+    width: 100%;
+    padding: 5px;
+}
+
+.title {
+    width: fit-content;
+    max-width: 150px;
+    margin: 0;
+    padding: 5px;
+    align-self: center; /* Para centrar el título horizontalmente */
+}
+
+.options {
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+}
+
+.option {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    padding: 5px;
+    margin: 5%;
+    cursor: pointer;
+    align-self: center; /* Centrar las opciones horizontalmente */
+}
+
+.logout {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    padding: 0;
+    margin: 5%;
+    cursor: pointer;
+    align-self: center; /* Centrar el logout horizontalmente */
+}

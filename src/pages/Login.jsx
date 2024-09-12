@@ -2,11 +2,25 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import '../Styles/Login.css';
 import { Button, TextField } from "@mui/material";
+import url from "../backUrl";
 
 // Simulación de autenticación de usuario y contraseña
-function auth(user, password) {
-    // Lógica de autenticación aquí
-    return user === "admin" && password === "1234";
+function auth(email, password) {
+    return email=='admin'&&password=='1234';
+    
+    /*let body = {email:email, password:password}
+    let r;
+    try{
+        r = fetch(url + "/login",{
+            method:"POST",
+            body: JSON.stringify(body),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }catch (error){
+        console.log(error)
+    }*/
 }
 
 // Hook personalizado para manejar el formulario
@@ -53,14 +67,14 @@ const Login = () => {
     const [formData, handleChange] = useLoginForm();
 
     const handleSubmit = () => {
+        console.log("login");
+        let r = auth(formData.user, formData.password);
+        console.log(r);
         if (auth(formData.user, formData.password)) {
-            navigate('/dashboard');
+            localStorage.setItem("isLogged", true);
+            navigate("/dashboard");
         } else {
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                errorEmail: true,
-                errorPassword: true
-            }));
+            console.log("Error de autenticación");
         }
     };
 
