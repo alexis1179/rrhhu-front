@@ -6,7 +6,6 @@
 
 .menu{
     display: flex;
-    flex-grow: 1;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -19,7 +18,7 @@
 .dashboard-title{
     background-color: #0b2447;
     color: white;
-    padding: 5%;
+    padding: 2%;
 }
 
 .dashboard-content{
@@ -27,7 +26,6 @@
     flex-direction: column;
     background-color: #0b2447;
     color: white;
-
     padding: 5%;
     height: 300px;
     gap: 10px;
@@ -61,9 +59,6 @@
     width: fit-content;
 }
 
-.search-button{
-    padding: 5% !important;
-}
 
 .button-bar{
     display: flex;
@@ -71,4 +66,8 @@
     align-items: center;
     gap: 10px;
     margin: 2%;
+}
+
+.tabla{
+    width: 80%;
 }

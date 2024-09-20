@@ -5,22 +5,26 @@ import { Button, TextField } from "@mui/material";
 import url from "../backUrl";
 
 // Simulación de autenticación de usuario y contraseña
-function auth(email, password) {
-    return email=='admin'&&password=='1234';
-    
-    /*let body = {email:email, password:password}
-    let r;
+async function auth(email, password) {
+    let body = {email:email, password:password}
     try{
-        r = fetch(url + "/login",{
+        const r = await fetch(url + "/login",{
             method:"POST",
             body: JSON.stringify(body),
             headers: {
                 'Content-Type': 'application/json'
             }
-        })
+        });
+        if(!r.ok){
+            throw new Error("Error en la petición");
+        }
+        const data = await r.json();
+        console.log(data);
+        return data;
     }catch (error){
         console.log(error)
-    }*/
+        return null;
+    }
 }
 
 // Hook personalizado para manejar el formulario
@@ -66,12 +70,14 @@ const Login = () => {
     const [password, setPassword] = useState();
     const [formData, handleChange] = useLoginForm();
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log("login");
-        let r = auth(formData.user, formData.password);
-        console.log(r);
-        if (auth(formData.user, formData.password)) {
+        let r = await auth(formData.user, formData.password);
+        console.log(r.Roles[0].authority);
+        if (r.Message==="Autenticacion Correcta") {
             localStorage.setItem("isLogged", true);
+            localStorage.setItem("rol", r.Roles[0].authority);
+            localStorage.setItem("token",r.token);
             navigate("/dashboard");
         } else {
             console.log("Error de autenticación");
