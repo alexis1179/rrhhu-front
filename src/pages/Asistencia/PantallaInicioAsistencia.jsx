@@ -9,11 +9,7 @@ import CardActions from "@mui/material/CardActions";
 import { useNavigate } from "react-router-dom";
 import url from "../../backurl";
 
-
 export default function PantallaInicioAsistencia() {
-  const navigate = useNavigate();
-  const [usuarios, setUsuarios] = usestate([]);
-  
   return (
     <>
       <Sidebar />
