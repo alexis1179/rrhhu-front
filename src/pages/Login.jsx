@@ -71,7 +71,6 @@ const Login = () => {
     const [formData, handleChange] = useLoginForm();
 
     const handleSubmit = async () => {
-        console.log("login");
         let r = await auth(formData.user, formData.password);
         console.log(r.Roles[0].authority);
         if (r.Message==="Autenticacion Correcta") {

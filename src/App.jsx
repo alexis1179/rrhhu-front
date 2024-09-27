@@ -15,7 +15,7 @@ const App = () => {
         <Route element={<RequireAuth isLogged={localStorage.getItem("isLogged") === "true"} />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/gestionar-usuarios" element={<GestionarUsuarios />} />
-          <Route path="/registrar-usuario" element={<RegistrarUsuario/>}/>
+          <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
         </Route>
       </Routes>
     </BrowserRouter>
