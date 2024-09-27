@@ -4,6 +4,7 @@ import Sidebar from "../../Components/Sidebar";
 import "../../Styles/RegistrarUsuario.css"
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 
 export default function RegistrarUsuario() {
     const navigate = useNavigate();
@@ -44,7 +45,7 @@ export default function RegistrarUsuario() {
                         <TextField label="Salario" variant="outlined" fullWidth />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField label="Fecha de Ingreso" variant="outlined" fullWidth />
+                        <TextField label="Fecha de ingreso" variant="outlined" fullWidth/>
                     </Grid>
                 </Grid>
                 <div className="buttons">
