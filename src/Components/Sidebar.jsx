@@ -22,39 +22,37 @@ export default function Sidebar() {
     navigate("/");
   };
   return (
-    <>
-      <div className="side-section">
-        <div className="title-navbar">
-          <img src={image} alt="logo" className="logo" />
-          <Logout className="logout" onClick={CerrarSesion} />
-        </div>
-        {rol ? (
-          <div className="options">
-            <Typography
-              onClick={() => navigate("/dashboard")}
-              style={{ cursor: "pointer" }}
-            >
-              Inicio
-            </Typography>
-            <Typography
-              onClick={() => navigate("/gestionar-usuarios")}
-              style={{ cursor: "pointer" }}
-            >
-              Usuarios
-            </Typography>
-            <Typography
-              onClick={() => navigate("/asistencia")}
-              style={{ cursor: "pointer" }}
-            >
-              Asistencia
-            </Typography>
-            <Typography>Nómina</Typography>
-            <Typography>Reportes</Typography>
-          </div>
-        ) : (
-          <></>
-        )}
+    <div className="side-section">
+      <div className="title-navbar">
+        <img src={image} alt="logo" className="logo" />
+        <Logout className="logout" onClick={CerrarSesion} />
       </div>
-    </>
+      {rol ? (
+        <div className="options">
+          <Typography
+            onClick={() => navigate("/dashboard")}
+            style={{ cursor: "pointer" }}
+          >
+            Inicio
+          </Typography>
+          <Typography
+            onClick={() => navigate("/gestionar-usuarios")}
+            style={{ cursor: "pointer" }}
+          >
+            Usuarios
+          </Typography>
+          <Typography
+            onClick={() => navigate("/asistencia")}
+            style={{ cursor: "pointer" }}
+          >
+            Asistencia
+          </Typography>
+          <Typography>Nómina</Typography>
+          <Typography>Reportes</Typography>
+        </div>
+      ) : (
+        <></>
+      )}
+    </div>
   );
 }
