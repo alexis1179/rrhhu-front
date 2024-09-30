@@ -20,7 +20,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import { useNavigate } from "react-router-dom";
-import url from "../../backurl";
+import url from "../../backUrl";
 
 export default function PantallaInicioAsistencia() {
   const navigate = useNavigate();
