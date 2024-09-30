@@ -143,7 +143,7 @@ export default function SolicitarDiasLibres() {
                       value={startDate}
                       onChange={(newValue) => setStartDate(newValue)}
                       disablePast
-                      views={["day", "month", "year"]}
+                      views={["year", "month", "day"]}
                       inputFormat="DD/MM/YYYY"
                     />
                   </DemoItem>
@@ -160,7 +160,7 @@ export default function SolicitarDiasLibres() {
                       value={endDate}
                       onChange={(newValue) => setEndDate(newValue)}
                       disablePast
-                      views={["day", "month", "year"]}
+                      views={["year", "month", "day"]}
                       inputFormat="DD/MM/YYYY"
                       disabled={endDateDisabled}
                     />
