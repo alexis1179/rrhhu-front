@@ -95,7 +95,7 @@ export default function SolicitarDiasLibres() {
       mes: startDate.format("MMMM"),
       año: startDate.format("YYYY"),
       causa: causa,
-      estado: "pendiente",
+      estado: "Pendiente",
     };
 
     try {

@@ -107,11 +107,6 @@ export default function PantallaInicioAsistencia() {
                         <TableCell align="center">
                           {solicitudesDias.estado}
                         </TableCell>
-                        <TableCell align="center">
-                          <Icon>
-                            <Reorder sx={{ cursor: "pointer" }} />
-                          </Icon>
-                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
