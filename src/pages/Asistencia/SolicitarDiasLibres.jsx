@@ -8,6 +8,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Select, MenuItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import "../../Styles/SolicitarDiasLibres.css";
 import {
@@ -24,14 +25,15 @@ const tomorrow = dayjs().add(1, "day");
 const afterTomorrow = dayjs().add(2, "day");
 
 export default function SolicitarDiasLibres() {
-  const [fechaSolicitud, setFechaSolicitud] = React.useState(dayjs());
+  const navigate = useNavigate();
+  const [fechaSolicitud] = React.useState(dayjs());
   const [startDate, setStartDate] = React.useState(tomorrow);
   const [endDate, setEndDate] = React.useState(afterTomorrow);
   const [daysDiff, setDaysDiff] = React.useState(0);
   const [error, setError] = React.useState(null);
   const [causa, setCausa] = React.useState("");
   const [endDateDisabled, setEndDateDisabled] = React.useState(false);
-
+  const [open, setOpen] = React.useState(false);
   //Validar la cantidad de días
   React.useEffect(() => {
     const diff = endDate.diff(startDate, "days");
@@ -59,10 +61,11 @@ export default function SolicitarDiasLibres() {
       setEndDate(startDate.add(60, "days"));
     } else {
       setEndDateDisabled(false);
+      setEndDate(afterTomorrow);
     }
   };
 
-  //Al clickear el boton de guardar
+  //Al clickear el boton de guardar ser valida que los campos esten completos
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (error) {
@@ -73,8 +76,6 @@ export default function SolicitarDiasLibres() {
       setOpen(true);
     }
   };
-
-  const [open, setOpen] = React.useState(false);
 
   //Confirmar en el cuadro de dialogo
   const handleConfirm = async () => {
@@ -105,12 +106,18 @@ export default function SolicitarDiasLibres() {
       });
 
       if (response.ok) {
-        console.log("Solicitud enviada con éxito");
+        alert("Se realizó con éxito la solicitud");
+        // Reset fields to default values
+        setStartDate(tomorrow);
+        setEndDate(afterTomorrow);
+        setCausa("");
+        setDaysDiff(0);
+        setError(null);
       } else {
-        console.error("Error al enviar la solicitud");
+        alert("Error al enviar la solicitud");
       }
     } catch (error) {
-      console.error("Error al enviar la solicitud", error);
+      alert("Error al enviar la solicitud", error);
     }
     setOpen(false);
   };
@@ -216,7 +223,12 @@ export default function SolicitarDiasLibres() {
               </DialogActions>
             </Dialog>
 
-            <Button variant="contained" color="error" size="large">
+            <Button
+              variant="contained"
+              color="error"
+              size="large"
+              onClick={() => navigate("/inicio-asistencia")}
+            >
               Cancelar
             </Button>
           </div>

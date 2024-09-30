@@ -5,7 +5,6 @@ import "../../Styles/PantallaInicioAsistencia.css";
 import {
   Button,
   Icon,
-  Grid,
   Paper,
   TableContainer,
   TableHead,
@@ -16,7 +15,7 @@ import {
   TableBody,
 } from "@mui/material";
 
-import { CardGiftcard, Groups, Reorder } from "@mui/icons-material";
+import { Reorder } from "@mui/icons-material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
@@ -27,7 +26,6 @@ export default function PantallaInicioAsistencia() {
   const navigate = useNavigate();
   const [solicitudesDiasLibres, setSolicitudesDiasLibres] = useState([]);
 
-  let rol = localStorage.getItem("rol") == "ROLE_ADMIN";
   let UserId = localStorage.getItem("UserId");
   console.log(UserId);
   useEffect(() => {
