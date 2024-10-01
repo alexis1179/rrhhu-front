@@ -85,6 +85,9 @@ const Login = () => {
       localStorage.setItem("rol", r.Roles[0].authority);
       localStorage.setItem("token", r.token);
       localStorage.setItem("UserId", r.UserId);
+      let usuario = obtenerUsuario(r.token, r.UserId);
+      localStorage.setItem("usuario", usuario.nombre);
+      console.log(usuario);
       navigate("/dashboard");
     } else {
       console.log("Error de autenticación");
@@ -124,5 +127,18 @@ const Login = () => {
     </div>
   );
 };
+
+async function obtenerUsuario(token, id){
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", "Bearer " + token);
+  const response = await fetch(url + "/usuarios"+id, {
+      method: 'GET',
+      headers: myHeaders
+  })
+  const data = await response.json();
+  console.log(data);
+  return data;
+}
 
 export default Login;
