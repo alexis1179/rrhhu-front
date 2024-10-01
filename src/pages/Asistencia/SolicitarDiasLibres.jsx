@@ -6,10 +6,10 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Select, MenuItem } from "@mui/material";
+import { Select, MenuItem, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import url from "../../backUrl";
-
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 import "../../Styles/SolicitarDiasLibres.css";
 import {
   Button,
@@ -59,6 +59,9 @@ export default function SolicitarDiasLibres() {
     } else if (selectedCausa === "Permiso por paternidad") {
       setEndDateDisabled(true);
       setEndDate(startDate.add(60, "days"));
+    } else if (selectedCausa === "") {
+      setEndDateDisabled(true);
+      setEndDate(afterTomorrow);
     } else {
       setEndDateDisabled(false);
       setEndDate(startDate.add(1, "days"));
@@ -132,7 +135,13 @@ export default function SolicitarDiasLibres() {
       <Sidebar />
       <div className="contenido">
         <div className="form">
-          <Typography variant="h4"> Solicitud de días libres</Typography>
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <Box mr={2}>
+              <EventBusyIcon fontSize="large"> </EventBusyIcon>
+            </Box>
+            <Typography variant="h4"> Solicitud de días libres</Typography>
+          </Box>
+
           <Grid container className="input" spacing={2}>
             <Grid item size xs={6}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -170,14 +179,14 @@ export default function SolicitarDiasLibres() {
             </Grid>
 
             <Grid item size xs={6}>
-              <Typography variant="h6">Causa:</Typography>
+              <Typography variant="h6">Tipo de solicitud:</Typography>
               <Select
                 value={causa}
                 onChange={handleCausaChange}
                 displayEmpty
-                inputProps={{ "aria-label": "Causa" }}
+                inputProps={{ "aria-label": "Tipo de solicitud" }}
               >
-                <MenuItem value="">Seleccione una causa</MenuItem>
+                <MenuItem value="">Seleccione un tipo de solicitud</MenuItem>
                 <MenuItem value="Vacaciones">Vacaciones</MenuItem>
                 <MenuItem value="Permiso por maternidad">
                   Permiso por maternidad
@@ -185,7 +194,14 @@ export default function SolicitarDiasLibres() {
                 <MenuItem value="Permiso por paternidad">
                   Permiso por paternidad
                 </MenuItem>
-                <MenuItem value="Enfermedad">Enfermedad</MenuItem>
+                <MenuItem value="Permiso por emergencia familiar">
+                  Permiso por emergencia familiar
+                </MenuItem>
+                <MenuItem value="Enfermedad">Permiso por enfermedad</MenuItem>
+                <MenuItem value="Permiso por defunción">
+                  {" "}
+                  Permiso por defunción
+                </MenuItem>
               </Select>
             </Grid>
 

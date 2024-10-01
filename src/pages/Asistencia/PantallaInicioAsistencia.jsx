@@ -3,9 +3,9 @@ import Sidebar from "../../Components/Sidebar";
 
 import "../../Styles/PantallaInicioAsistencia.css";
 import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 import {
   Button,
-  Icon,
   Paper,
   TableContainer,
   TableHead,
@@ -16,7 +16,6 @@ import {
   TableBody,
 } from "@mui/material";
 
-import { Reorder } from "@mui/icons-material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
@@ -41,9 +40,23 @@ export default function PantallaInicioAsistencia() {
       <div className="card-container">
         <Card className="card" sx={{ minWidth: 900 }}>
           <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Asistencia
-            </Typography>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <WorkHistoryIcon fontSize="medium"> </WorkHistoryIcon>
+              <Typography
+                variant="h5"
+                component="div"
+                style={{ marginLeft: 8 }}
+              >
+                Asistencia
+              </Typography>
+            </div>
+
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Recuerda hacer la carga diaria de tus horas trabajadas.
             </Typography>
@@ -56,9 +69,23 @@ export default function PantallaInicioAsistencia() {
 
         <Card className="card" sx={{ minWidth: 900 }}>
           <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Solicitud de días libres
-            </Typography>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <EventBusyIcon fontSize="medium"> </EventBusyIcon>
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="div"
+                style={{ marginLeft: 8 }}
+              >
+                Solicitud de días libres
+              </Typography>
+            </div>
 
             <CardActions sx={{ justifyContent: "space-between" }}>
               <Button
@@ -67,7 +94,9 @@ export default function PantallaInicioAsistencia() {
               >
                 Solicitar días libres
               </Button>
-              <Button size="small">Gestionar solicitudes</Button>
+              <Button size="small" onClick={() => navigate("/solicitudes")}>
+                Gestionar solicitudes
+              </Button>
             </CardActions>
 
             <div className="table">
@@ -103,7 +132,7 @@ export default function PantallaInicioAsistencia() {
                           {solicitudesDias.fecha_inicio}
                         </TableCell>
                         <TableCell align="center">
-                          {solicitudesDias.fecha_fi}
+                          {solicitudesDias.fecha_fin}
                         </TableCell>
                         <TableCell align="center">
                           {solicitudesDias.estado}
