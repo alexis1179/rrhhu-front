@@ -7,6 +7,7 @@ import GestionarUsuarios from "./pages/Usuarios/GestionarUsuarios";
 import RegistrarUsuario from "./pages/Usuarios/RegistrarUsuario";
 import RequireAuth from "./pages/Autenticacion/RequireAuth";
 import PantallaInicioAsistencia from "./pages/Asistencia/PantallaInicioAsistencia";
+import GestionarSolicitudes from "./pages/Asistencia/GestionarSolicitudes";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
           <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
           <Route path="/asistencia" element={<PantallaInicioAsistencia />} />
+          <Route path="/solicitudes" element={<GestionarSolicitudes /> } />
         </Route>
       </Routes>
     </BrowserRouter>
