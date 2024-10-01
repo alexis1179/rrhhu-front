@@ -1,0 +1,13 @@
+.card-container {
+  padding: 20px; /* add padding to the container */
+}
+
+.card {
+  width: 100%;
+  margin: 20px auto; /* add a margin to the card */
+}
+
+.MuiTypography-h5 {
+  text-align: center;
+}
+
