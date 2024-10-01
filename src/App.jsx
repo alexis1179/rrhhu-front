@@ -9,6 +9,7 @@ import RequireAuth from "./pages/Autenticacion/RequireAuth";
 import PantallaInicioAsistencia from "./pages/Asistencia/PantallaInicioAsistencia";
 import GestionarSolicitudes from "./pages/Asistencia/GestionarSolicitudes";
 import SolicitarDiasLibres from "./pages/Asistencia/SolicitarDiasLibres";
+import ResponderSolicitudes from "./pages/Asistencia/ResponderSolicitudes";
 
 const App = () => {
   return (
@@ -25,9 +26,9 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/gestionar-usuarios" element={<GestionarUsuarios />} />
           <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
-          <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
           <Route path="/asistencia" element={<PantallaInicioAsistencia />} />
-          <Route path="/solicitudes" element={<GestionarSolicitudes /> } />
+          <Route path="/solicitudes" element={<GestionarSolicitudes />} />
+          <Route path="/responder-solicitudes" element={<ResponderSolicitudes />} />
           <Route
             path="/inicio-asistencia"
             element={<PantallaInicioAsistencia />}

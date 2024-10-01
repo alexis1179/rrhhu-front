@@ -25,7 +25,7 @@ import url from "../../backUrl";
 export default function PantallaInicioAsistencia() {
   const navigate = useNavigate();
   const [solicitudesDiasLibres, setSolicitudesDiasLibres] = useState([]);
-
+  let rol = localStorage.getItem("rol") == "ROLE_RRHH";  
   let UserId = localStorage.getItem("UserId");
   console.log(UserId);
   useEffect(() => {
@@ -94,9 +94,12 @@ export default function PantallaInicioAsistencia() {
               >
                 Solicitar días libres
               </Button>
-              <Button size="small" onClick={() => navigate("/solicitudes")}>
-                Gestionar solicitudes
-              </Button>
+
+              {rol ? (
+                <Button size="small" onClick={() => navigate("/solicitudes")}>
+                  Gestionar solicitudes
+                </Button>
+              ) : null}
             </CardActions>
 
             <div className="table">
