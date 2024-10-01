@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../../Components/Sidebar";
 
 import "../../Styles/PantallaInicioAsistencia.css";
+import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
 import {
   Button,
   Icon,

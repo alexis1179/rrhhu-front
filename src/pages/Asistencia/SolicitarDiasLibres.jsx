@@ -61,7 +61,7 @@ export default function SolicitarDiasLibres() {
       setEndDate(startDate.add(60, "days"));
     } else {
       setEndDateDisabled(false);
-      setEndDate(afterTomorrow);
+      setEndDate(startDate.add(1, "days"));
     }
   };
 
