@@ -8,9 +8,9 @@
 
 .title-navbar{
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 15px;
+    padding: 10px;
     padding-bottom: 0px;
 }
 
@@ -18,9 +18,9 @@
     display: flex;
     padding-bottom: 15px;
     padding-left: 15px;
+    padding-right: 15px;
     max-width: 100%;
-    justify-content: left;
-    gap: 5%;
+    justify-content: space-between;
 }
 
 .logout {
@@ -28,7 +28,15 @@
 }
 
 .logo{
-    width: 150px;
-    height: 100px;
+    width: 200px;
+    height: 150px;
     cursor: pointer;
+}
+
+.tabs{
+    display: flex;
+    flex-direction:row;
+    justify-content: space-between;
+    gap: 15%;
+    padding-left: 15px;
 }

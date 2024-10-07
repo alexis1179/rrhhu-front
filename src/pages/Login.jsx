@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../Styles/Login.css";
 import { Button, TextField } from "@mui/material";
@@ -19,7 +19,6 @@ async function auth(email, password) {
       throw new Error("Error en la petición");
     }
     const data = await r.json();
-    console.log(data);
     return data;
   } catch (error) {
     console.log(error);
@@ -45,7 +44,6 @@ const useLoginForm = () => {
       errorPassword: name === "password" ? !value : prevFormData.errorPassword,
     }));
   };
-
   return [formData, handleChange];
 };
 
@@ -79,16 +77,19 @@ const Login = () => {
 
   const handleSubmit = async () => {
     let r = await auth(formData.user, formData.password);
-    console.log(r.Roles[0].authority);
+    let usuario = await obtenerUsuario(r.token, r.UserId);
+    let usuarios = await obtenerUsuarios(r.token);
     if (r.Message === "Autenticacion Correcta") {
       localStorage.setItem("isLogged", true);
       localStorage.setItem("rol", r.Roles[0].authority);
       localStorage.setItem("token", r.token);
       localStorage.setItem("UserId", r.UserId);
-      let usuario = obtenerUsuario(r.token, r.UserId);
       localStorage.setItem("usuario", usuario.nombre);
-      console.log(usuario);
-      navigate("/dashboard");
+      if (usuarios.find(usuario => usuario.id === r.UserId)) {
+      navigate("/dashboard");}
+      else{
+        console.log("Usuario inactivo");
+      }
     } else {
       console.log("Error de autenticación");
     }
@@ -128,17 +129,29 @@ const Login = () => {
   );
 };
 
-async function obtenerUsuario(token, id){
+async function obtenerUsuario(token, id) {
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
   myHeaders.append("Authorization", "Bearer " + token);
-  const response = await fetch(url + "/usuarios"+id, {
-      method: 'GET',
-      headers: myHeaders
+  const response = await fetch(url + "/usuarios" + id, {
+    method: 'GET',
+    headers: myHeaders
   })
   const data = await response.json();
-  console.log(data);
   return data;
+}
+
+async function obtenerUsuarios(token) {
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", "Bearer " + token);
+  const response = await fetch(url + "/usuarios", {
+    method: 'GET',
+    headers: myHeaders
+  })
+  const data = await response.json();
+  const usuarios = data.filter(usuario => usuario.estado == "Activo");
+  return usuarios;
 }
 
 export default Login;

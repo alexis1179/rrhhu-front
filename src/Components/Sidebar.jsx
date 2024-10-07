@@ -13,7 +13,6 @@ export default function Sidebar() {
   let user = localStorage.getItem("rol") == "ROLE_USER";
   let notEmpleado = localStorage.getItem("rol") != "ROLE_USER";
   let usuario = localStorage.getItem("usuario");
-  console.log(usuario);
   const CerrarSesion = () => {
     console.log("logout");
     localStorage.clear();
@@ -23,42 +22,41 @@ export default function Sidebar() {
     <>
       <div className="side-section">
         <div className="title-navbar">
-          <img src={image} alt="logo" className="logo" />
-          {usuario ? (
-            <Typography variant="h6">{usuario.nombre}</Typography>
-          ) : (
-            <Typography variant="h6">Usuario</Typography>
-          )}
-
-          <Logout className="logout" onClick={CerrarSesion} />
+          <img src={image} alt="logo" className="logo" onClick={() => navigate("/dashboard")} />
         </div>
         {rol ? (
           <div className="options">
-            <Typography
-              onClick={() => navigate("/dashboard")}
-              style={{ cursor: "pointer" }}
-            >
-              Inicio
-            </Typography>
-            {notEmpleado ? (
+            <div className="tabs">
               <Typography
-                onClick={() => navigate("/gestionar-usuarios")}
+                onClick={() => navigate("/dashboard")}
                 style={{ cursor: "pointer" }}
               >
-                Usuarios
+                Inicio
               </Typography>
-            ) : (
-              <></>
-            )}
-
-            <Typography
-              onClick={() => navigate("/inicio-asistencia")}
-              style={{ cursor: "pointer" }}
-            >
-              Asistencia
-            </Typography>
-            {admin ? <Typography>Nómina</Typography> : <></>}
-            {admin ? <Typography>Reportes</Typography> : <></>}
+              {notEmpleado ? (
+                <Typography
+                  onClick={() => navigate("/gestionar-usuarios")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Usuarios
+                </Typography>
+              ) : (
+                <></>
+              )}
+              <Typography
+                onClick={() => navigate("/inicio-asistencia")}
+                style={{ cursor: "pointer" }}
+              >
+                Asistencia
+              </Typography>
+              {admin ? <Typography>Nómina</Typography> : <></>}
+              {admin ? <Typography>Reportes</Typography> : <></>}
+            </div>
+            <div className="tabs">
+              {usuario ? <Typography>Usuario: {usuario}</Typography> :
+                <Typography>Sin usuario</Typography>}
+              <Logout className="logout" onClick={CerrarSesion} />
+            </div>
           </div>
         ) : (
           <></>
