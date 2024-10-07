@@ -11,6 +11,7 @@ import GestionarSolicitudes from "./pages/Asistencia/GestionarSolicitudes";
 import SolicitarDiasLibres from "./pages/Asistencia/SolicitarDiasLibres";
 import ResponderSolicitudes from "./pages/Asistencia/ResponderSolicitudes";
 import RegistroHorarioLaboral from "./pages/Asistencia/RegistroHorarioLaboral";
+import VisualizarUsuario from "./pages/Usuarios/VisualizarUsuario";
 
 const App = () => {
   return (
@@ -33,6 +34,8 @@ const App = () => {
             path="/gestionar-solicitud"
             element={<ResponderSolicitudes />}
           />
+          <Route path="/responder-solicitudes" element={<ResponderSolicitudes />} />
+          <Route path="/usuarios/:id" element={<VisualizarUsuario />} />
           <Route
             path="/inicio-asistencia"
             element={<PantallaInicioAsistencia />}

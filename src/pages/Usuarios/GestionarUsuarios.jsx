@@ -63,7 +63,7 @@ export default function GestionarUsuarios() {
                                         <TableCell align="center">{usuario.email}</TableCell>
                                         <TableCell align="center">
                                             <Icon>
-                                                <Reorder sx={{ cursor: "pointer" }} />
+                                                <Reorder sx={{ cursor: "pointer" }} onClick={() => navigate(`/usuarios/${usuario.id}`)} />
                                             </Icon>
                                         </TableCell>
                                     </TableRow>
