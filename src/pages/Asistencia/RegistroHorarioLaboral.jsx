@@ -12,7 +12,7 @@ export default function ResponderSolicitudes() {
       <Sidebar> </Sidebar>
       <div className="contenido">
         <div className="form">
-          <Typography> Registrar</Typography>
+          <Typography> Registrar horario laboral</Typography>
         </div>
       </div>
     </>

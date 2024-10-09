@@ -37,7 +37,7 @@ export default function GestionarUsuarios() {
                 <div className="button-bar">
                     <Button variant="contained" color="success" onClick={() => navigate("/registrar-usuario")}>Nuevo Usuario</Button>
                     {rol ?
-                        <Button variant="contained" color="error">Eliminar Usuario</Button>
+                        ""
                         : <>
                             <Button variant="contained" color="error" disabled>Eliminar Usuario</Button>
                         </>}
