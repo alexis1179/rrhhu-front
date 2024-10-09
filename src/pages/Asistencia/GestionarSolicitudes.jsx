@@ -82,7 +82,14 @@ export default function GestionarSolicitudes() {
                                 cursor: "pointer",
                                 color: "green",
                               }}
-                              onClick={() => navigate("/gestionar-solicitud")}
+                              onClick={() =>
+                                navigate(
+                                  "/responder-solicitud/" +
+                                    usuario.id +
+                                    "/" +
+                                    solicitud.id
+                                )
+                              }
                             />
                           </Icon>
                         </TableCell>

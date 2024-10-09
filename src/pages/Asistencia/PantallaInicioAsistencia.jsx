@@ -62,8 +62,15 @@ export default function PantallaInicioAsistencia() {
             </Typography>
           </CardContent>
           <CardActions sx={{ justifyContent: "space-between" }}>
-            <Button size="small">Cargar horas</Button>
-            <Button size="small">Ver historial de asistencia</Button>
+            <Button
+              size="small"
+              onClick={() => navigate("/registrar-asistencia")}
+            >
+              Cargar horas
+            </Button>
+            <Button size="small" onClick={() => navigate("/solicitudes")}>
+              Ver historial de asistencia
+            </Button>
           </CardActions>
         </Card>
 

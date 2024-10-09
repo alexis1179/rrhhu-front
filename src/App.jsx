@@ -26,25 +26,31 @@ const App = () => {
           }
         >
           <Route path="/dashboard" element={<Dashboard />} />
+          {/*CRUD Usuarios*/}
           <Route path="/gestionar-usuarios" element={<GestionarUsuarios />} />
           <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
-          <Route path="/asistencia" element={<PantallaInicioAsistencia />} />
-          <Route path="/solicitudes" element={<GestionarSolicitudes />} />
-          <Route
-            path="/gestionar-solicitud"
-            element={<ResponderSolicitudes />}
-          />
-          <Route path="/responder-solicitudes" element={<ResponderSolicitudes />} />
           <Route path="/usuarios/:id" element={<VisualizarUsuario />} />
+          
+          {/*Asistencia*/}
           <Route
             path="/inicio-asistencia"
             element={<PantallaInicioAsistencia />}
           />
           <Route
+            path="/registrar-asistencia"
+            element={<RegistroHorarioLaboral />}
+          />
+
+          {/*Solicitudes dias libres*/}
+          <Route path="/solicitudes" element={<GestionarSolicitudes />} />
+          <Route
             path="/solicitar-dias-libres"
             element={<SolicitarDiasLibres />}
           />
-          <Route path="/ver-asistencia" element={<RegistroHorarioLaboral />} />
+          <Route
+            path="/responder-solicitud/:idUser/:idSolicitud"
+            element={<ResponderSolicitudes />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

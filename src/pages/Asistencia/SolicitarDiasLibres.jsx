@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  TextField
 } from "@mui/material";
 
 const tomorrow = dayjs().add(1, "day");
@@ -206,6 +207,13 @@ export default function SolicitarDiasLibres() {
             </Grid>
 
             <Grid item size xs={4}>
+              {/* <TextField
+                label="Cantidad total de días"
+                value={daysDiff}
+                variant="outlined"
+                fullWidth
+                disabled
+              />*/}
               <Typography variant="h6">Cantidad de días:</Typography>
               <Typography variant="h6">{daysDiff}</Typography>
               {error && (
