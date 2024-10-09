@@ -19,28 +19,12 @@ import url from "../../backUrl";
 
 export default function ResponderSolicitudes() {
   const navigate = useNavigate();
-  const { idUser } = useParams();
-  const { idSolicitud } = useParams();
+  const params = useParams();
+  const idUser = params.idUser;
+  const idSolicitud = params.idSolicitud;
   const [solicitud, setSolicitud] = useState(null);
   const [openDialogAprobar, setOpenDialogAprobar] = useState(false);
   const [openDialogRechazar, setOpenDialogRechazar] = useState(false);
-
-  /*useEffect(() => {
-    const getSolicitud = async () => {
-      const apiUrl = url + "/sdiaslibres/consultar/usuario/" + idUser;
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        const solicitudData = data.find(
-          (solicitud) => solicitud.id === parseInt(idSolicitud)
-        );
-        setSolicitud(solicitudData);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getSolicitud();
-  }, [id]);*/
 
   //Enviar Aprobado
 
@@ -51,7 +35,7 @@ export default function ResponderSolicitudes() {
   }, []);
 
   const handleConfirmAprobar = async () => {
-    const apiUrl = url + "/sdiaslibres/" + idUser;
+    const apiUrl = url + "/sdiaslibres/" + idSolicitud;
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append(
@@ -81,7 +65,7 @@ export default function ResponderSolicitudes() {
 
   //Enviar Rechazado
   const handleConfirmRechazar = async () => {
-    const apiUrl = url + "/sdiaslibres/" + id;
+    const apiUrl = url + "/sdiaslibres/" + idSolicitud;
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append(
@@ -135,7 +119,6 @@ export default function ResponderSolicitudes() {
               <EventBusyIcon fontSize="large"> </EventBusyIcon>
             </Box>
             <Typography variant="h4">
-              {" "}
               Gestionar solicitud de días libres
             </Typography>
           </Box>
@@ -144,7 +127,7 @@ export default function ResponderSolicitudes() {
             <Grid item size xs={3}>
               <TextField
                 label="Id de solicitud"
-                value={solicitud.id}
+                value={solicitud ? solicitud.id : ""}
                 variant="outlined"
                 fullWidth
                 disabled
@@ -153,7 +136,7 @@ export default function ResponderSolicitudes() {
             <Grid item size xs={9}>
               <TextField
                 label="Fecha de solicitud"
-                value={solicitud.fecha_solicitud}
+                value={solicitud ? solicitud.fecha_solicitud : ""}
                 variant="outlined"
                 fullWidth
                 disabled
@@ -163,7 +146,7 @@ export default function ResponderSolicitudes() {
             <Grid item size xs={6}>
               <TextField
                 label="Fecha de inicio"
-                value={solicitud.fecha_inicio}
+                value={solicitud ? solicitud.fecha_inicio : ""}
                 variant="outlined"
                 fullWidth
                 disabled
@@ -173,7 +156,7 @@ export default function ResponderSolicitudes() {
             <Grid item size xs={6}>
               <TextField
                 label="Fecha de finalización"
-                value={solicitud.fecha_fin}
+                value={solicitud ? solicitud.fecha_fin : ""}
                 variant="outlined"
                 fullWidth
                 disabled
@@ -182,7 +165,7 @@ export default function ResponderSolicitudes() {
             <Grid item size xs={6}>
               <TextField
                 label="Cantidad total de días"
-                value={solicitud.cantidad_dias}
+                value={solicitud ? solicitud.cantidad_dias : ""}
                 variant="outlined"
                 fullWidth
                 disabled
@@ -191,7 +174,7 @@ export default function ResponderSolicitudes() {
             <Grid item size xs={6}>
               <TextField
                 label="Tipo de solicitud"
-                value={solicitud.causa}
+                value={solicitud ? solicitud.causa : ""}
                 variant="outlined"
                 fullWidth
                 disabled
