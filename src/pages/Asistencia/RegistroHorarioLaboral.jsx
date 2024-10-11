@@ -48,6 +48,13 @@ export default function ResponderSolicitudes() {
     setOpen(false);
   };
 
+  const handleValidarGuardar = () => {
+    setGuardar(true);
+  };
+
+  const handleCerrarGuardar = () => {
+    setGuardar(false);
+  };
   const handleCancel = () => {
     // Add your cancel logic here
     navigate(-1); // Go back to the previous page
@@ -78,7 +85,7 @@ export default function ResponderSolicitudes() {
     if (asuetosTrabajados > 0) {
       registrarAsuetosTrabajados(
         asuetosTrabajados,
-        fecha.locale('es').format("MMMM"),
+        fecha.locale("es").format("MMMM"),
         fecha.format("YYYY")
       );
     }
@@ -103,7 +110,7 @@ export default function ResponderSolicitudes() {
         fecha.format("YYYY")
       );
     }
-    handleClose();
+    handleCerrarGuardar();
   };
 
   return (
@@ -267,8 +274,7 @@ export default function ResponderSolicitudes() {
                     fullWidth
                     required
                     value={extrasDiurnas}
-                    onChange={handleChangeHorasExtrasDiurna
-                    }
+                    onChange={handleChangeHorasExtrasDiurna}
                     inputProps={{
                       type: "number",
                       step: "0.1",
@@ -285,7 +291,7 @@ export default function ResponderSolicitudes() {
                     fullWidth
                     required
                     value={extrasNocturnas}
-                    onChange={handleChangeHorasExtrasNocturna }
+                    onChange={handleChangeHorasExtrasNocturna}
                     inputProps={{
                       type: "number",
                       step: "0.1",
@@ -304,7 +310,7 @@ export default function ResponderSolicitudes() {
               variant="contained"
               color="success"
               size="large"
-              onClick={handleGuardar}
+              onClick={handleValidarGuardar}
             >
               Registrar
             </Button>
@@ -343,8 +349,8 @@ export default function ResponderSolicitudes() {
       </Dialog>
 
       <Dialog
-        open={open}
-        onClose={handleClose}
+        open={guardar}
+        onClose={handleCerrarGuardar}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -357,7 +363,7 @@ export default function ResponderSolicitudes() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
+          <Button onClick={handleCerrarGuardar}>Cancelar</Button>
           <Button onClick={handleGuardar} autoFocus>
             Guardar
           </Button>
