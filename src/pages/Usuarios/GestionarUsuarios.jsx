@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { Groups, Reorder } from "@mui/icons-material";
 
-import "../../Styles/Dashboard.css";
+import "../../Styles/GestionarUsuarios.css";
 import { useNavigate } from "react-router-dom";
 import url from "../../backUrl";
 
@@ -47,14 +47,14 @@ export default function GestionarUsuarios() {
       <div className="dashboard">
         <Sidebar />
         <div className="menu">
+          <div className="content-title">
+            <Groups fontSize="large" className="icon" />
+            <Typography variant="h4" className="search-title">
+              USUARIOS
+            </Typography>
+          </div>
           <div className="search-bar">
             <div className="search-left">
-              <Groups fontSize="large" className="icon" />
-              <Typography variant="h5" className="search-title">
-                USUARIOS CREADOS
-              </Typography>
-            </div>
-            <div className="search-right">
               <TextField
                 label="Buscar usuario por email"
                 variant="outlined"
@@ -63,28 +63,16 @@ export default function GestionarUsuarios() {
                 onChange={handleSearch}
               />
             </div>
-          </div>
-          <div className="button-bar">
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => navigate("/registrar-usuario")}
-            >
-              Nuevo Usuario
-            </Button>
-            {rol ? (
-              ""
-            ) : (
-              <>
-                <Button variant="contained" color="error" disabled>
-                  Eliminar Usuario
-                </Button>
-              </>
-            )}
+            <div className="search-right">
+              {rol ? 
+              <Button variant="contained" color="success" onClick={() => navigate("/usuario/registrar")}>
+                Nuevo Usuario
+              </Button>:<></>}
+            </div>
           </div>
           <div className="table">
             <TableContainer id="usuarioslist" component={Paper}>
-              <Table id="usuarios" className="tabla" sx={{ minWidth: 750 }}>
+              <Table id="usuarios" className="tabla" sx={{ '& .MuiTableCell-root': { fontSize: '18px' } }}>
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">Nombre</TableCell>
@@ -107,7 +95,7 @@ export default function GestionarUsuarios() {
                             <Reorder
                               sx={{ cursor: "pointer" }}
                               onClick={() =>
-                                navigate(`/usuarios/${usuario.id}`)
+                                navigate(`/usuario/${usuario.id}`)
                               }
                             />
                           </Icon>

@@ -1,0 +1,28 @@
+.content-title{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.search-right{
+    justify-content: flex-end;
+}
+
+.tabla{
+    min-width: 75vw;
+}
+
+.menu{
+    width: 75vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard{
+    display: flex;
+    align-items: center;
+    width: 100%;
+}

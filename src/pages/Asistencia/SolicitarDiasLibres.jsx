@@ -252,7 +252,7 @@ export default function SolicitarDiasLibres() {
               variant="contained"
               color="error"
               size="large"
-              onClick={() => navigate("/inicio-asistencia")}
+              onClick={() => navigate("/asistencia/inicio")}
             >
               Cancelar
             </Button>

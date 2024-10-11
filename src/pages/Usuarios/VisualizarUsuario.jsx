@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../../Components/Sidebar";
-
+import Loading from "../../Components/Loading";
 import "../../Styles/RegistrarUsuario.css"
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -27,73 +27,69 @@ export default function VisualizarUsuario() {
             });
     }, [id]);
 
-    if (cargando) {
-        return <Typography variant="h4">Cargando información del usuario...</Typography>; // Mostrar un mensaje de carga
-    }
-
     if (error) {
         return <Typography variant="h4" color="error">{error}</Typography>; // Mostrar un mensaje de error si ocurre
-    }
-
-    if (!usuario) {
-        return <Typography variant="h4">No se encontró la información del usuario.</Typography>;
     }
 
     return (
         <>
             <Sidebar />
-            <div className="contenido">
-                <div className="form">
-                    <Typography variant="h4">Visualizar Empleado</Typography>
-                    <Typography variant="h5">Información Personal</Typography>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <TextField label="Nombre Completo" value={usuario.nombre} variant="outlined" fullWidth disabled/>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <TextField label="Documento de Identificación" value={usuario.dui} variant="outlined" fullWidth disabled />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <TextField label="Correo Electrónico" value={usuario.email} variant="outlined" fullWidth disabled/>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <TextField label="Teléfono" value={usuario.telefono} variant="outlined" fullWidth disabled={!edit} />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField label="Dirección" value={usuario.direccion} variant="outlined" fullWidth disabled={!edit} />
-                        </Grid>
-                    </Grid>
-                    <Typography variant="h5">Información Laboral</Typography>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <TextField label="Cargo" value={usuario.cargo} variant="outlined" fullWidth disabled={!edit} />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <TextField label="Salario" value={usuario.salario} variant="outlined" fullWidth disabled={!edit} />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <TextField label="Fecha de ingreso" value={usuario.fecha_ingreso} variant="outlined" fullWidth disabled/>
-                        </Grid>
-                    </Grid>
-                    <div className="buttons">
-                        <Button variant="contained" color="error"
-                            onClick={() => navigate("/gestionar-usuarios")}>
-                            Regresar
-                        </Button>
-                        {edit ?
-                            <Button variant="contained" color="success"
-                                onClick={() => setEdit(false)}>
-                                Guardar Cambios
-                            </Button>
-                            :
-                            <Button variant="contained" color="primary"
-                                onClick={() => setEdit(true)}>
-                                Editar
-                            </Button>
-                        }
-                    </div>
-                </div>
-            </div>
+            {cargando ?
+                <Loading /> :
+                <div className="contenido">
+                    {!usuario ?
+                        <Typography variant="h4">No se encontró la información del usuario.</Typography> :
+                        <div className="form">
+                            <Typography variant="h4">Visualizar Empleado</Typography>
+                            <Typography variant="h5">Información Personal</Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <TextField label="Nombre Completo" value={usuario.nombre} variant="outlined" fullWidth disabled />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <TextField label="Documento de Identificación" value={usuario.dui} variant="outlined" fullWidth disabled />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <TextField label="Correo Electrónico" value={usuario.email} variant="outlined" fullWidth disabled />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <TextField label="Teléfono" value={usuario.telefono} variant="outlined" fullWidth disabled={!edit} />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField label="Dirección" value={usuario.direccion} variant="outlined" fullWidth disabled={!edit} />
+                                </Grid>
+                            </Grid>
+                            <Typography variant="h5">Información Laboral</Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <TextField label="Cargo" value={usuario.cargo} variant="outlined" fullWidth disabled={!edit} />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField label="Salario" value={usuario.salario} variant="outlined" fullWidth disabled={!edit} />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField label="Fecha de ingreso" value={usuario.fecha_ingreso} variant="outlined" fullWidth disabled />
+                                </Grid>
+                            </Grid>
+                            <div className="buttons">
+                                <Button variant="contained" color="error"
+                                    onClick={() => navigate("/usuarios")}>
+                                    Regresar
+                                </Button>
+                                {edit ?
+                                    <Button variant="contained" color="success"
+                                        onClick={() => setEdit(false)}>
+                                        Guardar Cambios
+                                    </Button>
+                                    :
+                                    <Button variant="contained" color="primary"
+                                        onClick={() => setEdit(true)}>
+                                        Editar
+                                    </Button>
+                                }
+                            </div>
+                        </div>}
+                </div>}
         </>
     );
 }

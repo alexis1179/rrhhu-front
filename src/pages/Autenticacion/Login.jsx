@@ -92,7 +92,7 @@ const Login = ({ setIsLogged }) => {
           setIsLogged(true); // Actualizar estado de autenticación en el componente
           navigate("/dashboard");
         } else {
-          navigate("/usuario-inactivo");
+          navigate("/usuario/inactivo");
         }
       } catch (error) {
         console.log(error);
