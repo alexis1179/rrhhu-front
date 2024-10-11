@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import url from "../../backUrl";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import "../../Styles/SolicitarDiasLibres.css";
+import "dayjs/locale/es";
 import {
   Button,
   Grid,
@@ -96,7 +97,7 @@ export default function SolicitarDiasLibres() {
       fecha_inicio: startDate.format("DD/MM/YYYY"),
       fecha_fin: endDate.format("DD/MM/YYYY"),
       cantidad_dias: daysDiff,
-      mes: startDate.format("MMMM"),
+      mes: startDate.locale("es").format("MMMM"),
       año: startDate.format("YYYY"),
       causa: causa,
       estado: "Pendiente",
