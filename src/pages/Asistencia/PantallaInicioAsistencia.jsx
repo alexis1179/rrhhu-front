@@ -64,11 +64,11 @@ export default function PantallaInicioAsistencia() {
           <CardActions sx={{ justifyContent: "space-between" }}>
             <Button
               size="small"
-              onClick={() => navigate("/registrar-asistencia")}
+              onClick={() => navigate("/asistencia/registrar")}
             >
               Cargar horas
             </Button>
-            <Button size="small" onClick={() => navigate(`/historial-asistencia`)}>
+            <Button size="small" onClick={() => navigate(`/asistencia/historial`)}>
               Ver historial de asistencia
             </Button> 
           </CardActions>
@@ -97,7 +97,7 @@ export default function PantallaInicioAsistencia() {
             <CardActions sx={{ justifyContent: "space-between" }}>
               <Button
                 size="small"
-                onClick={() => navigate("/solicitar-dias-libres")}
+                onClick={() => navigate("/libres/solicitar")}
               >
                 Solicitar días libres
               </Button>

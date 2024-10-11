@@ -31,23 +31,23 @@ const App = () => {
       {!loading && (
         <Routes>
           <Route path="/" element={<Login setIsLogged={setIsLogged} />} />
-          <Route path="/usuario-inactivo" element={<UsuarioInactivo />} />
+          <Route path="/usuario/inactivo" element={<UsuarioInactivo />} />
           <Route element={<RequireAuth isLogged={isLogged} />}>
             <Route path="/dashboard" element={<Dashboard />} />
             {/* CRUD Usuarios */}
-            <Route path="/gestionar-usuarios" element={<GestionarUsuarios />} />
-            <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
+            <Route path="/usuarios" element={<GestionarUsuarios />} />
+            <Route path="/usuario/registrar" element={<RegistrarUsuario />} />
             <Route path="/asistencia" element={<PantallaInicioAsistencia />} />
             <Route path="/solicitudes" element={<GestionarSolicitudes />} />
-            <Route path="/gestionar-solicitud" element={<ResponderSolicitudes />} />
-            <Route path="/usuarios/:id" element={<VisualizarUsuario />} />
+            <Route path="/solicitud" element={<ResponderSolicitudes />} />
+            <Route path="/usuario/:id" element={<VisualizarUsuario />} />
             {/* Asistencia */}
-            <Route path="/inicio-asistencia" element={<PantallaInicioAsistencia />} />
-            <Route path="/registrar-asistencia" element={<RegistroHorarioLaboral />} />
-            <Route path="/historial-asistencia" element={<HistorialAsistencia />} />
+            <Route path="/asistencia/inicio" element={<PantallaInicioAsistencia />} />
+            <Route path="/asistencia/registrar" element={<RegistroHorarioLaboral />} />
+            <Route path="/asistencia/historial" element={<HistorialAsistencia />} />
             {/* Solicitudes dias libres */}
-            <Route path="/solicitar-dias-libres" element={<SolicitarDiasLibres />} />
-            <Route path="/responder-solicitud/:idUser/:idSolicitud" element={<ResponderSolicitudes />} />
+            <Route path="/libres/solicitar" element={<SolicitarDiasLibres />} />
+            <Route path="/solicitud/responder/:idUser/:idSolicitud" element={<ResponderSolicitudes />} />
           </Route>
         </Routes>
       )}

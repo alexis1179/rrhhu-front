@@ -34,7 +34,7 @@ export default function Sidebar() {
               </Typography>
               {notEmpleado ? (
                 <Typography
-                  onClick={() => navigate("/gestionar-usuarios")}
+                  onClick={() => navigate("/usuarios")}
                   style={{ cursor: "pointer" }}
                 >
                   Usuarios
@@ -43,7 +43,7 @@ export default function Sidebar() {
                 <></>
               )}
               <Typography
-                onClick={() => navigate("/inicio-asistencia")}
+                onClick={() => navigate("/asistencia/inicio")}
                 style={{ cursor: "pointer" }}
               >
                 Asistencia
