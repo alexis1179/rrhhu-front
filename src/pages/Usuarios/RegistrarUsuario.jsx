@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../../Components/Sidebar";
 
 import "../../Styles/RegistrarUsuario.css";
@@ -50,6 +50,8 @@ export default function RegistrarUsuario() {
   const [salario, setSalario] = useState("");
   const [sexo, setSexo] = useState("");
   const [fecha_nacimiento, setFechaNacimiento] = useState("");
+  const [openConfirm, setOpenConfirm] = useState(false);
+
 
   //validar correo formato
   const handleEmailChange = (event) => {
@@ -103,65 +105,46 @@ export default function RegistrarUsuario() {
     }
   };
 
-  //validar cargo y asignar rol
-  /* const handleCargoChange = (event) => {
-    const cargo = event.target.value;
-    setCargo(cargo);
-      console.log("cargo : ", cargo);
-    let rolValue;
-    if (cargo === "Personal de RRHH") {
-      rolValue = "RRHH";
-      setRol(rolValue);
-      console.log("rol : ", rol);
-    } else if (cargo === "Administrador") {
-      rolValue = "ADMIN";
-      setRol(rolValue);
-      console.log("rol : ", rol);
-    } else {
-      rolValue = "USER";
-      setRol(rolValue);
-      console.log("rol : ", rol);
-    }
-    
-      
-  };*/
   const handleCargoChange = (event) => {
     const cargo = event.target.value;
-    setCargo(cargo);
-    if (cargo === "RRHH") {
-      setRol("RRHH");
-    } else if (cargo === "Administrador") {
-      setRol("ADMIN");
-    } else {
-      setRol("USER");
+    let rolValue;
+    switch (cargo) {
+      case "RRHH":
+        rolValue = "RRHH";
+        break;
+      case "Administrador":
+        rolValue = "ADMIN";
+        break;
+      default:
+        rolValue = "USER";
+        break;
     }
-    console.log("Cargo:  ", cargo, " Rol:  ", rol);
+    setRol(rolValue);
+    setCargo(cargo);
+    console.log("Cargo: ", cargo, " Rol: ", rol);
   };
+
   const handleSave = () => {
-    if (
-      nombre &&
-      email &&
-      telefono &&
-      direccion &&
-      //edad &&
-      dui &&
-      //cuenta_planillera &&
-      cargo &&
-      fecha_ingreso &&
-      salario &&
-      sexo &&
-      fecha_nacimiento &&
-      !emailError &&
-      !identificationError &&
-      !phoneError &&
-      !salaryError
-    ) {
+
       const newPassword = generatePassword();
       setPassword(newPassword);
-      RegistrarUsuario(newPassword);
-    } else {
-      setOpenError(true);
-    }
+      //nombre,email, password,telefono,direccion,edad,dui,cuenta_planillera,cargo,fecha_ingreso,salario,rol
+      registrarNuevoUsuario(
+        nombre,
+        email,
+        newPassword,
+        telefono,
+        direccion,
+        dui,
+        cargo,
+        fecha_ingreso.format("DD/MM/YYYY"),
+        salario,
+        sexo,
+        rol
+      );
+      setOpen(true);
+      setOpenConfirm(false);
+
   };
 
   const handleErrorClose = () => {
@@ -172,52 +155,23 @@ export default function RegistrarUsuario() {
     setOpen(false);
     navigate("/gestionar-usuarios");
   };
-
-  const RegistrarUsuario = (password) => {
-    const apiUrl = url + "/crear";
-
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append(
-      "Authorization",
-      "Bearer " + localStorage.getItem("token")
-    );
-    
-    const userData = {
-      nombre,
-      email,
-      password,
-      telefono,
-      direccion,
-      edad,
-      dui,
-      cuenta_planillera,
-      cargo,
-      fecha_ingreso,
-      salario,
-      salario_neto,
-      horas,
-      dias_descontados,
-      roles: [
-        {
-          name: rol,
-        },
-      ],
-    };
-
-    fetch(apiUrl, {
-      method: "POST",
-      headers: myHeaders,
-      body: JSON.stringify(userData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setOpen(true);
-      })
-      .catch((error) => {
-        setOpenError(true);
-      });
-  };
+const isFormValid = () => {
+  return (
+    nombre &&
+    email &&
+    telefono &&
+    direccion &&
+    dui &&
+    cargo &&
+    fecha_ingreso &&
+    salario &&
+    sexo &&
+    !emailError &&
+    !identificationError &&
+    !phoneError &&
+    !salaryError
+  );
+};
 
   return (
     <>
@@ -390,7 +344,7 @@ export default function RegistrarUsuario() {
                     label="Fecha de ingreso"
                     name="fecha_ingreso"
                     views={["year", "month", "day"]}
-                    onChange={(e) => setFechaIngreso(e.target.value)}
+                    onChange={(newValue) => setFechaIngreso(newValue)}
                     inputFormat="DD/MM/YYYY"
                     renderInput={(params) => <OutlinedInput {...params} />}
                   />
@@ -399,9 +353,27 @@ export default function RegistrarUsuario() {
             </Grid>
           </Grid>
           <div className="buttons">
-            <Button variant="contained" color="success" onClick={handleSave}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => setOpenConfirm(true)}
+              disabled={!isFormValid()}
+            >
               Guardar
             </Button>
+
+            <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+              <DialogTitle>Confirmación</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  ¿Estás seguro de registrar al nuevo usuario?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpenConfirm(false)}>Cancelar</Button>
+                <Button onClick={handleSave}>Confirmar</Button>
+              </DialogActions>
+            </Dialog>
 
             <Dialog open={open} onClose={handleClose}>
               <DialogTitle>Usuario creado con éxito</DialogTitle>
@@ -453,4 +425,81 @@ function generatePassword() {
     );
   }
   return password;
+}
+
+async function registrarNuevoUsuario(
+  nombre,
+  email,
+  password,
+  telefono,
+  direccion,
+  dui,
+  cargo,
+  fecha_ingreso,
+  salario,
+  sexo,
+  rol
+) {
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", "Bearer " + localStorage.getItem("token"));
+  const data = {
+    nombre: nombre,
+    email: email,
+    password: password,
+    telefono: telefono,
+    direccion: direccion,
+    edad: "0",
+    dui: dui,
+    cuenta_planillera: "0",
+    cargo: cargo,
+    fecha_ingreso: fecha_ingreso,
+    salario: salario,
+    salario_neto: "0",
+    horas: 0,
+    estado: "Activo",
+    sexo: sexo,
+    dias_descontados: 0,
+    roles: [
+      {
+        name: rol,
+      },
+    ],
+    horasNocturnas: {
+      enero: 0,
+      febrero: 0,
+      marzo: 0,
+      abril: 0,
+      mayo: 0,
+      junio: 0,
+      julio: 0,
+      agosto: 0,
+      septiembre: 0,
+      octubre: 0,
+      noviembre: 0,
+      diciembre: 0,
+    },
+
+    horasDiurnas: {
+      enero: 0,
+      febrero: 0,
+      marzo: 0,
+      abril: 0,
+      mayo: 0,
+      junio: 0,
+      julio: 0,
+      agosto: 0,
+      septiembre: 0,
+      octubre: 0,
+      noviembre: 0,
+      diciembre: 0,
+    },
+  };
+
+  const response = await fetch(url + "/crear", {
+    method: "POST",
+    headers: myHeaders,
+    body: JSON.stringify(data),
+  });
+  return response;
 }
