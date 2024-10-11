@@ -68,9 +68,9 @@ export default function PantallaInicioAsistencia() {
             >
               Cargar horas
             </Button>
-            <Button size="small" onClick={() => navigate("/solicitudes")}>
+            <Button size="small" onClick={() => navigate(`/historial-asistencia`)}>
               Ver historial de asistencia
-            </Button>
+            </Button> 
           </CardActions>
         </Card>
 

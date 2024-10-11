@@ -12,6 +12,7 @@ import SolicitarDiasLibres from "./pages/Asistencia/SolicitarDiasLibres";
 import ResponderSolicitudes from "./pages/Asistencia/ResponderSolicitudes";
 import RegistroHorarioLaboral from "./pages/Asistencia/RegistroHorarioLaboral";
 import VisualizarUsuario from "./pages/Usuarios/VisualizarUsuario";
+import HistorialAsistencia from "./pages/Asistencia/HistorialAsistencia.jsx";
 
 const App = () => {
   return (
@@ -51,6 +52,8 @@ const App = () => {
             path="/responder-solicitud/:idUser/:idSolicitud"
             element={<ResponderSolicitudes />}
           />
+          <Route path="/ver-asistencia" element={<RegistroHorarioLaboral />} />
+          <Route path="/historial-asistencia" element={<HistorialAsistencia />} /> 
         </Route>
       </Routes>
     </BrowserRouter>
