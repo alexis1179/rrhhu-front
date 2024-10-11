@@ -7,14 +7,13 @@ import image from "../image/DSI logo 2.png";
 
 export default function Sidebar() {
   let navigate = useNavigate();
-  let rol = true;
+  let logged = localStorage.getItem("isLogged")==="true";
   let rrhh = localStorage.getItem("rol") == "ROLE_RRHH";
   let admin = localStorage.getItem("rol") == "ROLE_ADMIN";
   let user = localStorage.getItem("rol") == "ROLE_USER";
   let notEmpleado = localStorage.getItem("rol") != "ROLE_USER";
   let usuario = localStorage.getItem("usuario");
   const CerrarSesion = () => {
-    console.log("logout");
     localStorage.clear();
     navigate("/");
   };
@@ -24,7 +23,7 @@ export default function Sidebar() {
         <div className="title-navbar">
           <img src={image} alt="logo" className="logo" onClick={() => navigate("/dashboard")} />
         </div>
-        {rol ? (
+        {logged ? (
           <div className="options">
             <div className="tabs">
               <Typography
@@ -52,7 +51,7 @@ export default function Sidebar() {
               {admin ? <Typography>Nómina</Typography> : <></>}
               {admin ? <Typography>Reportes</Typography> : <></>}
             </div>
-            <div className="tabs">
+            <div className="user">
               {usuario ? <Typography>Usuario: {usuario}</Typography> :
                 <Typography>Sin usuario</Typography>}
               <Logout className="logout" onClick={CerrarSesion} />

@@ -1,0 +1,12 @@
+.page-title{
+    text-align: center;
+    margin: 20px;
+}
+
+.contenido{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 5%;
+}

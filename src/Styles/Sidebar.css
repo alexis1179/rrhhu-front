@@ -40,3 +40,10 @@
     gap: 15%;
     padding-left: 15px;
 }
+
+.user{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+}

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../Styles/Login.css";
-import { Button, TextField } from "@mui/material";
-import url from "../backUrl";
+import { Button, TextField, Typography } from "@mui/material";
+import url from "../../backUrl";
+import "../../Styles/Login.css";
 
 // Simulación de autenticación de usuario y contraseña
 async function auth(email, password) {
@@ -21,13 +21,12 @@ async function auth(email, password) {
     const data = await r.json();
     return data;
   } catch (error) {
-    console.log(error);
     return null;
   }
 }
 
 // Hook personalizado para manejar el formulario
-const useLoginForm = () => {
+const useLoginForm = (setErrorMessage) => {
   const [formData, setFormData] = useState({
     user: "",
     password: "",
@@ -37,14 +36,17 @@ const useLoginForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    setErrorMessage(""); // Limpia el mensaje de error
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
-      errorEmail: name === "user" ? !value : prevFormData.errorEmail,
-      errorPassword: name === "password" ? !value : prevFormData.errorPassword,
+      errorEmail: name === "user" && !value ? true : false,
+      errorPassword: name === "password" && !value ? true : false,
     }));
   };
-  return [formData, handleChange];
+
+  return [formData, handleChange, setFormData];
 };
 
 // Componente reutilizable para los campos de texto
@@ -69,35 +71,47 @@ const TextFieldComponent = ({
   />
 );
 
-const Login = () => {
+const Login = ({ setIsLogged }) => {
   const navigate = useNavigate();
-  const [user, serUser] = useState();
-  const [password, setPassword] = useState();
-  const [formData, handleChange] = useLoginForm();
+  const [errorMessage, setErrorMessage] = useState(""); // Estado para mensaje de error
+  const [formData, handleChange, setFormData] = useLoginForm(setErrorMessage);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Evitar la recarga de la página
     let r = await auth(formData.user, formData.password);
-    let usuario = await obtenerUsuario(r.token, r.UserId);
-    let usuarios = await obtenerUsuarios(r.token);
-    if (r.Message === "Autenticacion Correcta") {
-      localStorage.setItem("isLogged", true);
-      localStorage.setItem("rol", r.Roles[0].authority);
-      localStorage.setItem("token", r.token);
-      localStorage.setItem("UserId", r.UserId);
-      localStorage.setItem("usuario", usuario.nombre);
-      if (usuarios.find(usuario => usuario.id === r.UserId)) {
-      navigate("/dashboard");}
-      else{
-        console.log("Usuario inactivo");
+    if (r != null) {
+      let usuario = await obtenerUsuario(r.token, r.UserId);
+      try {
+        localStorage.setItem("isLogged", false);
+        localStorage.setItem("rol", r.Roles[0].authority);
+        localStorage.setItem("token", r.token);
+        localStorage.setItem("UserId", r.UserId);
+        localStorage.setItem("usuario", usuario.nombre);
+        if (usuario.estado === "Activo") {
+          localStorage.setItem("isLogged", true);
+          setIsLogged(true); // Actualizar estado de autenticación en el componente
+          navigate("/dashboard");
+        } else {
+          navigate("/usuario-inactivo");
+        }
+      } catch (error) {
+        console.log(error);
       }
     } else {
-      console.log("Error de autenticación");
+      // Actualizar los estados de error
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        errorEmail: true,
+        errorPassword: true,
+      }));
+      // Mostrar el mensaje de error
+      setErrorMessage("Usuario y/o contraseña incorrectos");
     }
   };
 
   return (
     <div className="login-container">
-      <div className="login-form">
+      <form className="login-form" onSubmit={handleSubmit}>
         <p className="login-item">
           Sistema Integral de Gestión de Personal y Nómina
         </p>
@@ -105,26 +119,23 @@ const Login = () => {
           label="Usuario"
           type="email"
           name="user"
-          error={formData.errorEmail}
-          helperText={formData.errorEmail ? "Usuario inválido" : ""}
           onChange={handleChange}
         />
         <TextFieldComponent
           label="Contraseña"
           type="password"
           name="password"
-          error={formData.errorPassword}
-          helperText={formData.errorPassword ? "Contraseña inválida" : ""}
           onChange={handleChange}
         />
-        <Button
-          className="login-item"
-          variant="contained"
-          onClick={handleSubmit}
-        >
+        {errorMessage && (
+          <Typography variant="subtitle1" sx={{ color: "red", textAlign: "center" }}>
+            {errorMessage}
+          </Typography>
+        )}
+        <Button className="login-item" variant="contained" type="submit">
           Iniciar Sesión
         </Button>
-      </div>
+      </form>
     </div>
   );
 };
@@ -134,24 +145,11 @@ async function obtenerUsuario(token, id) {
   myHeaders.append("Content-Type", "application/json");
   myHeaders.append("Authorization", "Bearer " + token);
   const response = await fetch(url + "/usuarios" + id, {
-    method: 'GET',
-    headers: myHeaders
-  })
+    method: "GET",
+    headers: myHeaders,
+  });
   const data = await response.json();
   return data;
-}
-
-async function obtenerUsuarios(token) {
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("Authorization", "Bearer " + token);
-  const response = await fetch(url + "/usuarios", {
-    method: 'GET',
-    headers: myHeaders
-  })
-  const data = await response.json();
-  const usuarios = data.filter(usuario => usuario.estado == "Activo");
-  return usuarios;
 }
 
 export default Login;

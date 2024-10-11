@@ -24,7 +24,6 @@ export default function GestionarUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [searchText, setSearchText] = useState(""); // add a state for search text
   const [filteredUsuarios, setFilteredUsuarios] = useState([]); // add a state for filtered users
-
   let rol = localStorage.getItem("rol") == "ROLE_ADMIN";
 
   useEffect(() => {
@@ -143,6 +142,5 @@ async function obtenerUsuarios() {
     headers: myHeaders,
   });
   const data = await response.json();
-  console.log(data);
   return data;
 }

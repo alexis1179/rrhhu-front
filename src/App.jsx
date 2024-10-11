@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Login from "./pages/Login";
+import Login from "./pages/Autenticacion/Login";
 import Dashboard from "./pages/Dashboard";
 import GestionarUsuarios from "./pages/Usuarios/GestionarUsuarios";
 import RegistrarUsuario from "./pages/Usuarios/RegistrarUsuario";
@@ -13,49 +13,44 @@ import ResponderSolicitudes from "./pages/Asistencia/ResponderSolicitudes";
 import RegistroHorarioLaboral from "./pages/Asistencia/RegistroHorarioLaboral";
 import VisualizarUsuario from "./pages/Usuarios/VisualizarUsuario";
 import HistorialAsistencia from "./pages/Asistencia/HistorialAsistencia.jsx";
+import UsuarioInactivo from "./pages/Autenticacion/UsuarioInactivo";
 
 const App = () => {
+  const [isLogged, setIsLogged] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Verificar el estado de autenticación al cargar la aplicación
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("isLogged") === "true";
+    setIsLogged(loggedIn);
+    setLoading(false);
+  }, []);
+
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route
-          element={
-            <RequireAuth
-              isLogged={localStorage.getItem("isLogged") === "true"}
-            />
-          }
-        >
-          <Route path="/dashboard" element={<Dashboard />} />
-          {/*CRUD Usuarios*/}
-          <Route path="/gestionar-usuarios" element={<GestionarUsuarios />} />
-          <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
-          <Route path="/usuarios/:id" element={<VisualizarUsuario />} />
-          
-          {/*Asistencia*/}
-          <Route
-            path="/inicio-asistencia"
-            element={<PantallaInicioAsistencia />}
-          />
-          <Route
-            path="/registrar-asistencia"
-            element={<RegistroHorarioLaboral />}
-          />
-
-          {/*Solicitudes dias libres*/}
-          <Route path="/solicitudes" element={<GestionarSolicitudes />} />
-          <Route
-            path="/solicitar-dias-libres"
-            element={<SolicitarDiasLibres />}
-          />
-          <Route
-            path="/responder-solicitud/:idUser/:idSolicitud"
-            element={<ResponderSolicitudes />}
-          />
-          <Route path="/ver-asistencia" element={<RegistroHorarioLaboral />} />
-          <Route path="/historial-asistencia" element={<HistorialAsistencia />} /> 
-        </Route>
-      </Routes>
+      {!loading && (
+        <Routes>
+          <Route path="/" element={<Login setIsLogged={setIsLogged} />} />
+          <Route path="/usuario-inactivo" element={<UsuarioInactivo />} />
+          <Route element={<RequireAuth isLogged={isLogged} />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            {/* CRUD Usuarios */}
+            <Route path="/gestionar-usuarios" element={<GestionarUsuarios />} />
+            <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
+            <Route path="/asistencia" element={<PantallaInicioAsistencia />} />
+            <Route path="/solicitudes" element={<GestionarSolicitudes />} />
+            <Route path="/gestionar-solicitud" element={<ResponderSolicitudes />} />
+            <Route path="/usuarios/:id" element={<VisualizarUsuario />} />
+            {/* Asistencia */}
+            <Route path="/inicio-asistencia" element={<PantallaInicioAsistencia />} />
+            <Route path="/registrar-asistencia" element={<RegistroHorarioLaboral />} />
+            <Route path="/historial-asistencia" element={<HistorialAsistencia />} />
+            {/* Solicitudes dias libres */}
+            <Route path="/solicitar-dias-libres" element={<SolicitarDiasLibres />} />
+            <Route path="/responder-solicitud/:idUser/:idSolicitud" element={<ResponderSolicitudes />} />
+          </Route>
+        </Routes>
+      )}
     </BrowserRouter>
   );
 };

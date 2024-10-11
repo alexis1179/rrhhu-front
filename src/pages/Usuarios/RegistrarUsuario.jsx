@@ -182,21 +182,22 @@ export default function RegistrarUsuario() {
       "Authorization",
       "Bearer " + localStorage.getItem("token")
     );
-
+    
     const userData = {
       nombre,
       email,
       password,
       telefono,
       direccion,
-      //edad,
+      edad,
       dui,
-      // cuenta_planillera,
+      cuenta_planillera,
       cargo,
       fecha_ingreso,
       salario,
-      sexo,
-      fecha_nacimiento,
+      salario_neto,
+      horas,
+      dias_descontados,
       roles: [
         {
           name: rol,
