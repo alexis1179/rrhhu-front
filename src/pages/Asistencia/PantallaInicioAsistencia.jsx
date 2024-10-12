@@ -25,9 +25,8 @@ import url from "../../backUrl";
 export default function PantallaInicioAsistencia() {
   const navigate = useNavigate();
   const [solicitudesDiasLibres, setSolicitudesDiasLibres] = useState([]);
-  let rol = localStorage.getItem("rol") == "ROLE_RRHH";  
+  let rol = localStorage.getItem("rol") == "ROLE_RRHH";
   let UserId = localStorage.getItem("UserId");
-  console.log(UserId);
   useEffect(() => {
     obtenerSolicitudesDiasLibres().then((respuesta) => {
       setSolicitudesDiasLibres(respuesta);
@@ -70,7 +69,7 @@ export default function PantallaInicioAsistencia() {
             </Button>
             <Button size="small" onClick={() => navigate(`/asistencia/historial`)}>
               Ver historial de asistencia
-            </Button> 
+            </Button>
           </CardActions>
         </Card>
 
@@ -106,7 +105,7 @@ export default function PantallaInicioAsistencia() {
                 <Button size="small" onClick={() => navigate("/solicitudes")}>
                   Gestionar solicitudes
                 </Button>
-              ) : null}
+              ) : <></>}
             </CardActions>
 
             <div className="table">
@@ -171,6 +170,5 @@ async function obtenerSolicitudesDiasLibres() {
     }
   );
   const data = await response.json();
-  console.log(data);
   return data;
 }

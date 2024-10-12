@@ -3,7 +3,8 @@
     flex-direction: column;
     background-color: #03071e;
     color: white;
-    min-width: 100vw;
+    width: 100%;
+    max-width: 100vw;
 }
 
 .title-navbar{
