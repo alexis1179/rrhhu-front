@@ -32,23 +32,36 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Login setIsLogged={setIsLogged} />} />
           <Route path="/usuario/inactivo" element={<UsuarioInactivo />} />
-          <Route element={<RequireAuth isLogged={isLogged} />}>
+
+          {/* Rutas protegidas */}
+          {/* Se requiere autenticación para acceder a estas rutas, permitido para TODOS los roles*/}
+          <Route element={<RequireAuth isLogged={isLogged} allowedRoles={["ROLE_ADMIN", "ROLE_RRHH", "ROLE_USER"]} />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            {/* CRUD Usuarios */}
-            <Route path="/usuarios" element={<GestionarUsuarios />} />
-            <Route path="/usuario/registrar" element={<RegistrarUsuario />} />
-            <Route path="/asistencia" element={<PantallaInicioAsistencia />} />
-            <Route path="/solicitudes" element={<GestionarSolicitudes />} />
-            <Route path="/solicitud" element={<ResponderSolicitudes />} />
-            <Route path="/usuario/:id" element={<VisualizarUsuario />} />
-            {/* Asistencia */}
             <Route path="/asistencia/inicio" element={<PantallaInicioAsistencia />} />
             <Route path="/asistencia/registrar" element={<RegistroHorarioLaboral />} />
             <Route path="/asistencia/historial" element={<HistorialAsistencia />} />
-            {/* Solicitudes dias libres */}
             <Route path="/libres/solicitar" element={<SolicitarDiasLibres />} />
-            <Route path="/solicitud/responder/:idUser/:idSolicitud" element={<ResponderSolicitudes />} />
           </Route>
+
+          {/* Rutas protegidas */}
+          {/* Se requiere autenticación para acceder a estas rutas, permitido para ADMIN y RRHH*/}
+          <Route element={<RequireAuth isLogged={isLogged} allowedRoles={["ROLE_ADMIN", "ROLE_RRHH"]} />}>
+            <Route path="/usuarios" element={<GestionarUsuarios />} />
+            <Route path="/usuario/:id" element={<VisualizarUsuario />} />
+          </Route>
+          {/* Rutas protegidas */}
+          {/* Se requiere autenticación para acceder a estas rutas, permitido solo para el rol ROLE_ADMIN*/}
+          <Route element={<RequireAuth isLogged={isLogged} allowedRoles={"ROLE_ADMIN"} />}>
+            <Route path="/usuario/registrar" element={<RegistrarUsuario />} />
+          </Route>
+
+          {/* Rutas protegidas */}
+          {/* Se requiere autenticación para acceder a estas rutas, permitido solo para el rol ROLE_RRHH*/}
+          <Route element={<RequireAuth isLogged={isLogged} allowedRoles={"ROLE_RRHH"} />}>
+            <Route path="/solicitud/responder/:idUser/:idSolicitud" element={<ResponderSolicitudes />} />
+            <Route path="/solicitudes" element={<GestionarSolicitudes />} />            
+          </Route>
+
         </Routes>
       )}
     </BrowserRouter>
