@@ -41,6 +41,8 @@ export default function ResponderSolicitudes() {
   const [fecha, setFecha] = React.useState(dayjs());
   const [horasAusentes, setHorasAusentes] = useState(0);
   const [diasIncapacidad, setDiasIncapacidad] = useState(0);
+  const [guardarExitoso, setGuardarExitoso] = React.useState(false); 
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -57,7 +59,6 @@ export default function ResponderSolicitudes() {
     setGuardar(false);
   };
   const handleCancel = () => {
-    
     navigate(-1); // Regresar a la página anterior
   };
 
@@ -70,12 +71,12 @@ export default function ResponderSolicitudes() {
   };
   const handleChangeCargaLarboralDiurna = (event) => {
     setCargaLaboralDiurna(event.target.value);
-      const horasRestantesValue = parseFloat(7.9 - cargaLaboralDiurna);
-      setHorasAusentes(horasRestantesValue);
+    const horasRestantesValue = parseFloat(7.9 - cargaLaboralDiurna);
+    setHorasAusentes(horasRestantesValue);
   };
   const handleIncapacidad = (event) => {
     setDiasIncapacidad(event.target.value);
-  }
+  };
   const handleChangeHorasExtrasDiurna = (event) => {
     setExtrasDiurnas(event.target.value);
   };
@@ -116,13 +117,13 @@ export default function ResponderSolicitudes() {
         fecha.format("YYYY")
       );
     }
-        if (diasIncapacidad > 0) {
-          registrarIncapacidades(
-            parseInt(diasIncapacidad),
-            fecha.locale("es").format("MMMM"),
-            fecha.format("YYYY")
-          );
-        }
+    if (diasIncapacidad > 0) {
+      registrarIncapacidades(
+        parseInt(diasIncapacidad),
+        fecha.locale("es").format("MMMM"),
+        fecha.format("YYYY")
+      );
+    }
     if (actividad === "Vacaciones") {
       registrarVacaciones(
         fecha.locale("es").format("DD-MM-YYYY"),
@@ -131,9 +132,21 @@ export default function ResponderSolicitudes() {
         fecha.format("YYYY")
       );
     }
+    setGuardarExitoso(true);
     handleCerrarGuardar();
+    limpiarCampos();
   };
-
+  const limpiarCampos = () => {
+    setActividad("");
+    setAsuetoTrabajado(false);
+    setAsuetosTrabajados(0);
+    setCargaLaboralDiurna(0);
+    setExtrasDiurnas(0);
+    setExtrasNocturnas(0);
+    setFecha(dayjs());
+    setHorasAusentes(0);
+    setDiasIncapacidad(0);
+  };
   return (
     <>
       <Sidebar> </Sidebar>
@@ -405,6 +418,22 @@ export default function ResponderSolicitudes() {
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+      open={guardarExitoso}
+      onClose={() => setGuardarExitoso(false)}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">Horas cargadas con éxito</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Las horas han sido cargadas con éxito.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setGuardarExitoso(false)}>Aceptar</Button>
+      </DialogActions>
+    </Dialog>
     </>
   );
 }
