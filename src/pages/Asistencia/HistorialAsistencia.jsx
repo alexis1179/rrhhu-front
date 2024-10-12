@@ -1,94 +1,136 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; 
 import Sidebar from "../../Components/Sidebar";
-import { Pie, Line } from 'react-chartjs-2';
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement
-} from 'chart.js';
-
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement
-);
+import { Bar, Pie } from 'react-chartjs-2';
+import dayjs from 'dayjs';
+import "dayjs/locale/es";
+import url from "../../backUrl"; 
+import { set } from 'date-fns';
 
 const Report = () => {
-    // Datos del gráfico de pastel
-    const pieData = {
-        labels: ['Días trabajados 2024', 'Días libres 2024'],
-        datasets: [{
-            label: 'Días 2024',
-            data: [260, 105], // Ajusta estos valores según los datos reales
-            backgroundColor: ['#d0f123', '#d10ae8'], // Colores del gráfico
-            hoverOffset: 4
-        }]
-    };
+    const [fecha, setFecha] = React.useState(dayjs());  // Para obtener la fecha actual
+    const [mes, setMes] = useState(fecha.month() + 1);  // Guardamos el mes actual
+    const [year, setYear] = useState(fecha.year());  // Guardamos el año actual
+    const [extraData, setExtraData] = useState({ diurnas: 0, nocturnas: 0, asueto: 0, diurnasNormales: 0 });
+    const [loading, setLoading] = useState(true);
 
-    // Datos del gráfico de líneas de evolución
-    const lineData = {
-        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-        datasets: [
-            {
-                label: 'Usuarios Activos',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                data: [29, 68, 54, 35, 48, 62, 57, 46, 62, 75, 53, 65],
-                fill: true
-            },
-            {
-                label: 'Usuarios Inactivos',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                data: [19, 45, 30, 28, 36, 42, 40, 30, 40, 45, 35, 40],
-                fill: true
-            }
-        ]
-    };
+    const userId = localStorage.getItem("UserId");  // Obtenemos el ID del usuario logueado
 
-    // Opciones comunes para los gráficos de líneas
-    const lineOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                display: false,
+    // Función para obtener las horas extra y trabajadas en asueto
+    const fetchHoras = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            };
+
+            const resDiurnas = await fetch(`${url}/extras-diurnas/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
+            const diurnas = await resDiurnas.json();
+            console.log(fecha.locale('es').format('MMMM'));
+            console.log(diurnas);           
+
+            const resNocturnas = await fetch(`${url}/extras-nocturnas/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
+            const nocturnas = await resNocturnas.json();      
+            console.log(nocturnas);
+
+            const resAsueto = await fetch(`${url}/asuetos-trabajados/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
+            const asueto = await resAsueto.json();  
+            console.log(asueto);          
+
+            const resDiurnasNormales = await fetch(`${url}/carga-laboral-diurna/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
+            const diurnasNormales = await resDiurnasNormales.json();
+            console.log(diurnasNormales);
+            try{
+                setExtraData({diurnas: diurnas.filter(registro=>registro.mes==fecha.locale('es').format('MMMM'))[0].cantidad_horas})
             }
+            catch{
+
+            }
+    
+
+            /* setExtraData({
+                diurnas: diurnas.filter(registro=>registro.mes==fecha.locale('es').format('MMMM'))[0].cantidad_horas ,
+                nocturnas: nocturnas.filter(registro=>registro.mes==fecha.locale('es').format('MMMM'))[0].cantidad_horas ,
+                asueto: asueto.filter(registro=>registro.mes==fecha.locale('es').format('MMMM'))[0].cantidad_horas ,
+                diurnasNormales: diurnasNormales.filter(registro=>registro.mes==fecha.locale('es').format('MMMM'))[0].cantidad_horas
+            }); */
+
+            setLoading(false);
+        } catch (error) {
+            console.error("Error al obtener datos:", error);
         }
     };
 
-    return (
-        <>
-            <Sidebar />
-            <div style={{ textAlign: 'center', margin: '20px' }}>
-                <h1>MES DE OCTUBRE</h1>
-                <div style={{ marginBottom: '40px' }}>
-                    <Pie data={pieData} options={{ responsive: true, plugins: { legend: { position: 'right' } } }} />
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <div style={{ width: '30%' }}>
-                        <Line data={lineData} options={lineOptions} />
-                    </div>
-                    <div style={{ width: '30%' }}>
-                        <Line data={lineData} options={lineOptions} />
-                    </div>
-                    <div style={{ width: '30%' }}>
-                        <Line data={lineData} options={lineOptions} />
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-};
+    useEffect(() => {
+        fetchHoras();
+    }, [mes, year]);  // Actualiza cada vez que el mes o año cambian
 
-export default Report;
+        // Configuración del gráfico de barras
+        const barData = {
+            labels: ['Horas Diurnas', 'Horas Nocturnas', 'Horas Asueto'],
+            datasets: [{
+                label: 'Horas en el mes',
+                data: [extraData.diurnas, extraData.nocturnas, extraData.asueto],
+                backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726'],
+            }]
+        };
+    
+        // Configuración del gráfico de pastel
+        const pieData = {
+            labels: ['Horas Asueto', 'Horas Diurnas Normales'],
+            datasets: [{
+                label: 'Distribución Horas',
+                data: [extraData.asueto, extraData.diurnasNormales],
+                backgroundColor: ['#FF6384', '#36A2EB'],
+                hoverOffset: 4
+            }]
+        };
+    
+        // Opciones para los gráficos
+        const options = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+            },
+        };
+    
+        // Función para cambiar el mes desde el selector
+        const handleMonthChange = (e) => {
+            setMes(e.target.value);  // Actualiza el mes seleccionado
+        };
+
+        // Función para poner la primera letra en mayúscula
+        const capitalizeFirstLetter = (string) => {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        };
+    
+        return (
+            <>
+                <Sidebar />
+                <div style={{ textAlign: 'center', margin: '20px' }}>
+                    <h1>Historial de asistencia - {capitalizeFirstLetter(fecha.locale('es').format('MMMM'))} {fecha.year()}</h1>
+    
+                    <label>Seleccionar mes: </label>
+                    <select value={mes} onChange={handleMonthChange}>
+                        {Array.from({ length: 12 }, (_, i) => (
+                            <option key={i} value={i + 1}>
+                                {capitalizeFirstLetter(dayjs().locale('es').month(i).format('MMMM'))}  {/* Capitaliza manualmente */}
+                            </option>
+                        ))}
+                    </select>
+    
+                    {loading ? <p>Cargando datos...</p> : (
+                        <>
+
+                        </>
+                    )}
+                </div>
+            </>
+        );
+    };
+    
+    export default Report;
+    

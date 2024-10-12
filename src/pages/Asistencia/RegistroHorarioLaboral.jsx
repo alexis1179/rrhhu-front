@@ -56,8 +56,8 @@ export default function ResponderSolicitudes() {
     setGuardar(false);
   };
   const handleCancel = () => {
-    // Add your cancel logic here
-    navigate(-1); // Go back to the previous page
+    
+    navigate(-1); // Regresar a la página anterior
   };
 
   const handleChangeActividad = (event) => {
