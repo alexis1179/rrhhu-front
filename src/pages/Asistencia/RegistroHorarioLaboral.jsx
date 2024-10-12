@@ -39,7 +39,7 @@ export default function ResponderSolicitudes() {
   const [extrasDiurnas, setExtrasDiurnas] = React.useState(0);
   const [extrasNocturnas, setExtrasNocturnas] = React.useState(0);
   const [fecha, setFecha] = React.useState(dayjs());
-
+  const [horasAusentes, setHorasAusentes] = useState(0);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -69,6 +69,8 @@ export default function ResponderSolicitudes() {
   };
   const handleChangeCargaLarboralDiurna = (event) => {
     setCargaLaboralDiurna(event.target.value);
+      const horasRestantesValue = parseFloat(7.9 - cargaLaboralDiurna);
+      setHorasAusentes(horasRestantesValue);
   };
   const handleChangeHorasExtrasDiurna = (event) => {
     setExtrasDiurnas(event.target.value);
@@ -267,6 +269,19 @@ export default function ResponderSolicitudes() {
                     }}
                   />
                 </Grid>
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="Horas ausentes"
+                    variant="outlined"
+                    fullWidth
+                    value={horasAusentes.toFixed(1)}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </Grid>
+
                 <Grid item xs={6}>
                   <TextField
                     label="Horas extras diurnas"
