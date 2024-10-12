@@ -40,6 +40,7 @@ export default function ResponderSolicitudes() {
   const [extrasNocturnas, setExtrasNocturnas] = React.useState(0);
   const [fecha, setFecha] = React.useState(dayjs());
   const [horasAusentes, setHorasAusentes] = useState(0);
+  const [diasIncapacidad, setDiasIncapacidad] = useState(0);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -72,6 +73,9 @@ export default function ResponderSolicitudes() {
       const horasRestantesValue = parseFloat(7.9 - cargaLaboralDiurna);
       setHorasAusentes(horasRestantesValue);
   };
+  const handleIncapacidad = (event) => {
+    setDiasIncapacidad(event.target.value);
+  }
   const handleChangeHorasExtrasDiurna = (event) => {
     setExtrasDiurnas(event.target.value);
   };
@@ -108,6 +112,21 @@ export default function ResponderSolicitudes() {
     if (extrasNocturnas > 0) {
       registrarHorasExtrasNocturnas(
         extrasNocturnas,
+        fecha.locale("es").format("MMMM"),
+        fecha.format("YYYY")
+      );
+    }
+        if (diasIncapacidad > 0) {
+          registrarIncapacidades(
+            parseInt(diasIncapacidad),
+            fecha.locale("es").format("MMMM"),
+            fecha.format("YYYY")
+          );
+        }
+    if (actividad === "Vacaciones") {
+      registrarVacaciones(
+        fecha.locale("es").format("DD-MM-YYYY"),
+        fecha.locale("es").add(15, "day").format("DD-MM-YYYY"),
         fecha.locale("es").format("MMMM"),
         fecha.format("YYYY")
       );
@@ -240,6 +259,8 @@ export default function ResponderSolicitudes() {
                     variant="outlined"
                     fullWidth
                     required
+                    value={diasIncapacidad}
+                    onChange={handleIncapacidad}
                     inputProps={{
                       type: "number",
                       min: "1",
@@ -462,5 +483,51 @@ async function registrarHorasExtrasNocturnas(extrasNocturnas, mes, year) {
     headers: myHeaders,
     body: JSON.stringify(data),
   });
+  return response;
+}
+
+async function registrarIncapacidades(diasIncapacidad, mes, year) {
+  const userId = localStorage.getItem("UserId");
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", "Bearer " + localStorage.getItem("token"));
+  const data = {
+    cantidad_dias: diasIncapacidad,
+    mes: mes,
+    año: year,
+  };
+
+  const response = await fetch(
+    url + "/incapadidad-dias-usuario/crear/" + userId,
+    {
+      method: "POST",
+      headers: myHeaders,
+      body: JSON.stringify(data),
+    }
+  );
+  return response;
+}
+
+async function registrarVacaciones(fecha_inicio,fecha_fin, mes, year) {
+  const userId = localStorage.getItem("UserId");
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", "Bearer " + localStorage.getItem("token"));
+  const data = {
+    fecha_inicio: fecha_inicio,
+    fecha_fin: fecha_fin,
+    cantidad_dias: 15,
+    mes: mes,
+    año: year,
+  };
+
+  const response = await fetch(
+    url + "/vacaciones-dias-usuario/crear/" + userId,
+    {
+      method: "POST",
+      headers: myHeaders,
+      body: JSON.stringify(data),
+    }
+  );
   return response;
 }

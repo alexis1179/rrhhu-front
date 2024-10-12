@@ -49,9 +49,8 @@ export default function RegistrarUsuario() {
   const [fecha_ingreso, setFechaIngreso] = useState("");
   const [salario, setSalario] = useState("");
   const [sexo, setSexo] = useState("");
-  const [fecha_nacimiento, setFechaNacimiento] = useState("");
+  const [fecha_nacimiento, setFechaNacimiento] = useState();
   const [openConfirm, setOpenConfirm] = useState(false);
-
 
   //validar correo formato
   const handleEmailChange = (event) => {
@@ -104,7 +103,9 @@ export default function RegistrarUsuario() {
       console.log("salario : ", salario);
     }
   };
-
+  const handlerFechaNacimiento = (newValue) => {
+    setFechaNacimiento(newValue);
+  };
   const handleCargoChange = (event) => {
     const cargo = event.target.value;
     let rolValue;
@@ -121,30 +122,29 @@ export default function RegistrarUsuario() {
     }
     setRol(rolValue);
     setCargo(cargo);
-    console.log("Cargo: ", cargo, " Rol: ", rol);
+    console.log("Cargo: ", cargo, " Rol: ", rolValue);
   };
 
   const handleSave = () => {
-
-      const newPassword = generatePassword();
-      setPassword(newPassword);
-      //nombre,email, password,telefono,direccion,edad,dui,cuenta_planillera,cargo,fecha_ingreso,salario,rol
-      registrarNuevoUsuario(
-        nombre,
-        email,
-        newPassword,
-        telefono,
-        direccion,
-        dui,
-        cargo,
-        fecha_ingreso.format("DD/MM/YYYY"),
-        salario,
-        sexo,
-        rol
-      );
-      setOpen(true);
-      setOpenConfirm(false);
-
+    const newPassword = generatePassword();
+    setPassword(newPassword);
+    //nombre,email, password,telefono,direccion,edad,dui,cuenta_planillera,cargo,fecha_ingreso,salario,rol
+    registrarNuevoUsuario(
+      nombre,
+      email,
+      newPassword,
+      telefono,
+      direccion,
+      dui,
+      cargo,
+      fecha_ingreso.format("DD/MM/YYYY"),
+      salario,
+      sexo,
+      rol,
+      fecha_nacimiento.format("DD/MM/YYYY")
+    );
+    setOpen(true);
+    setOpenConfirm(false);
   };
 
   const handleErrorClose = () => {
@@ -153,25 +153,25 @@ export default function RegistrarUsuario() {
 
   const handleClose = () => {
     setOpen(false);
-    navigate("/gestionar-usuarios");
+    navigate("/usuarios");
   };
-const isFormValid = () => {
-  return (
-    nombre &&
-    email &&
-    telefono &&
-    direccion &&
-    dui &&
-    cargo &&
-    fecha_ingreso &&
-    salario &&
-    sexo &&
-    !emailError &&
-    !identificationError &&
-    !phoneError &&
-    !salaryError
-  );
-};
+  const isFormValid = () => {
+    return (
+      nombre &&
+      email &&
+      telefono &&
+      direccion &&
+      dui &&
+      cargo &&
+      fecha_ingreso &&
+      salario &&
+      sexo &&
+      !emailError &&
+      !identificationError &&
+      !phoneError &&
+      !salaryError
+    );
+  };
 
   return (
     <>
@@ -201,7 +201,7 @@ const isFormValid = () => {
                     disableFuture
                     views={["year", "month", "day"]}
                     inputFormat="DD/MM/YYYY"
-                    onChange={(e) => setFechaNacimiento(e.target.value)}
+                    onChange={handlerFechaNacimiento}
                     name="fecha_nacimiento"
                     renderInput={(params) => <OutlinedInput {...params} />}
                   />
@@ -438,7 +438,8 @@ async function registrarNuevoUsuario(
   fecha_ingreso,
   salario,
   sexo,
-  rol
+  rol,
+  fecha_nacimiento
 ) {
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
@@ -449,7 +450,7 @@ async function registrarNuevoUsuario(
     password: password,
     telefono: telefono,
     direccion: direccion,
-    edad: "0",
+    edad: fecha_nacimiento,
     dui: dui,
     cuenta_planillera: "0",
     cargo: cargo,
