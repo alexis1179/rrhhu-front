@@ -84,7 +84,7 @@ export default function GestionarSolicitudes() {
                               }}
                               onClick={() =>
                                 navigate(
-                                  "/responder-solicitud/" +
+                                  "/solicitud/responder/" +
                                     usuario.id +
                                     "/" +
                                     solicitud.id
