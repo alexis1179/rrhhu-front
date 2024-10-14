@@ -404,7 +404,7 @@ export default function RegistrarUsuario() {
             <Button
               variant="contained"
               color="error"
-              onClick={() => navigate("/gestionar-usuarios")}
+              onClick={() => navigate("/usuarios")}
             >
               Cancelar
             </Button>
