@@ -31,7 +31,7 @@ const Report = () => {
     const [fecha, setFecha] = React.useState(dayjs());  // Para obtener la fecha actual
     const [mes, setMes] = useState(fecha.month() + 1);  // Guardamos el mes actual
     const [mesLetras, setMesLetras] = useState(fecha.locale('es').format('MMMM'));  // Guardamos el mes actual en letras
-    const [year, setYear] = useState(fecha.year());  // Guardamos el año actual
+    const [year, setYear] = useState(fecha.year().toString());  // Guardamos el año actual
     const [extraData, setExtraData] = useState({ diurnas: 0, nocturnas: 0, asueto: 0, diurnasNormales: 0 });
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(true);
@@ -113,8 +113,9 @@ const Report = () => {
 
     useEffect(() => {
         setLoading(true);
+        setDisplayYear(year);
         fetchHoras();
-    }, [mes]);  // Actualiza cada vez que el mes o año cambian
+    }, [mes, year]);
 
     // Configuración del gráfico de barras
     const barData = {
