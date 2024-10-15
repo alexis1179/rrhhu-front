@@ -254,6 +254,7 @@ const handleSave = async () => {
                 required
                 name="dui"
                 onChange={handleIdentificationChange}
+                inputProps={{ maxLength: 9 }}
                 error={identificationError}
                 helperText={
                   identificationError ? "Debe ser un número de 9 dígitos" : ""
@@ -288,7 +289,7 @@ const handleSave = async () => {
                     ? "Debe ser un número de teléfono con 8 caracteres"
                     : ""
                 }
-                inputProps={{ maxLength: 9 }}
+                inputProps={{ maxLength: 8 }}
               />
             </Grid>
 

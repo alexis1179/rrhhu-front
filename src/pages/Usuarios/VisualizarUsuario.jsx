@@ -309,6 +309,7 @@ export default function VisualizarUsuario() {
                         : ""
                     }
                     variant="outlined"
+                    inputProps={{ maxLength: 8 }}
                     fullWidth
                     disabled={!edit}
                   />
