@@ -33,7 +33,8 @@ export default function VisualizarUsuario() {
   const [openDialogDescartar, setOpenDialogDescartar] = useState(false);
   const [openDialogModificar, setOpenDialogModificar] = useState(false);
   const [openDialogConfirmar, setOpenDialogConfirmar] = useState(false);
-
+  const [openDialogEstadoActualizado, setOpenDialogEstadoActualizado] =
+    useState(false);
   const [habilitarUsuario, setHabilitarUsuario] = useState(false);
   // Estados para los campos editables
   const [nombre, setNombre] = useState("");
@@ -240,6 +241,8 @@ export default function VisualizarUsuario() {
     );
     setEstado(nuevoEstado);
     setOpenDialogEstado(false);
+    setOpenDialogEstadoActualizado(true);
+    setHabilitarUsuario(!habilitarUsuario);
   };
 
   return (
@@ -452,6 +455,32 @@ export default function VisualizarUsuario() {
               </div>
             </div>
           )}
+          <Dialog
+            open={openDialogEstadoActualizado}
+            onClose={() => setOpenDialogEstadoActualizado(false)}
+          >
+            <DialogTitle>Actualizar estado</DialogTitle>
+            <DialogContent>
+              {!habilitarUsuario ? (
+                <Typography variant="body1">
+                  Usuario deshabilitado con éxito
+                </Typography>
+              ) : (
+                <Typography variant="body1">
+                  Usuario habilitado con éxito
+                </Typography>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="contained"
+                //color="error"
+                onClick={() => setOpenDialogEstadoActualizado(false)}
+              >
+                Cerrar
+              </Button>
+            </DialogActions>
+          </Dialog>
           <Dialog
             open={openDialogConfirmar}
             onClose={() => setOpenDialogConfirmar(false)}

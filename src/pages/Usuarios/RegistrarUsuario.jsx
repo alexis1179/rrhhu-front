@@ -24,6 +24,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { OutlinedInput, InputAdornment } from "@mui/material";
+import { es } from "date-fns/locale";
 import url from "../../backUrl";
 
 export default function RegistrarUsuario() {
@@ -35,8 +36,10 @@ export default function RegistrarUsuario() {
   const [rol, setRol] = useState("");
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
-  const [openError, setOpenError] = useState(false);
 
+  const [openError, setOpenError] = useState(false);
+  const [errorMensaje, setErrorMensaje] = useState("");
+  const [openErrorCrear, setOpenErrorCrear] = useState(false);
   //para guardar los valores del formulario
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
@@ -125,11 +128,12 @@ export default function RegistrarUsuario() {
     console.log("Cargo: ", cargo, " Rol: ", rolValue);
   };
 
-  const handleSave = () => {
-    const newPassword = generatePassword();
-    setPassword(newPassword);
-    //nombre,email, password,telefono,direccion,edad,dui,cuenta_planillera,cargo,fecha_ingreso,salario,rol
-    registrarNuevoUsuario(
+const handleSave = async () => {
+  const newPassword = generatePassword();
+  setPassword(newPassword);
+
+  try {
+    const nuevoUser = await registrarNuevoUsuario(
       nombre,
       email,
       newPassword,
@@ -143,13 +147,25 @@ export default function RegistrarUsuario() {
       rol,
       fecha_nacimiento.format("DD/MM/YYYY")
     );
-    setOpen(true);
+
+    if (nuevoUser.ok) {
+      // Check if the response is OK
+      setOpen(true); // Open the success dialog
+      setOpenConfirm(false);
+    }
+  } catch (error) {
     setOpenConfirm(false);
-  };
+    setErrorMensaje(error.message); // Set the error message
+    setOpenErrorCrear(true); // Open the error dialog
+  }
+};
 
   const handleErrorClose = () => {
     setOpenError(false);
   };
+    const handleErrorCrearClose = () => {
+      setOpenErrorCrear(false);
+    };
 
   const handleClose = () => {
     setOpen(false);
@@ -200,7 +216,8 @@ export default function RegistrarUsuario() {
                     label="Fecha de nacimiento"
                     disableFuture
                     views={["year", "month", "day"]}
-                    inputFormat="DD/MM/YYYY"
+                    format="DD/MM/YYYY"
+                    locale={es}
                     onChange={handlerFechaNacimiento}
                     name="fecha_nacimiento"
                     renderInput={(params) => <OutlinedInput {...params} />}
@@ -339,13 +356,13 @@ export default function RegistrarUsuario() {
 
             <Grid item xs={6}>
               <FormControl fullWidth>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <LocalizationProvider dateAdapter={AdapterDayjs} locale={es}>
                   <DatePicker
                     label="Fecha de ingreso"
                     name="fecha_ingreso"
                     views={["year", "month", "day"]}
                     onChange={(newValue) => setFechaIngreso(newValue)}
-                    inputFormat="DD/MM/YYYY"
+                    format="DD/MM/YYYY"
                     renderInput={(params) => <OutlinedInput {...params} />}
                   />
                 </LocalizationProvider>
@@ -389,7 +406,7 @@ export default function RegistrarUsuario() {
             </Dialog>
 
             <Dialog open={openError} onClose={handleErrorClose}>
-              <DialogTitle>Error</DialogTitle>
+              <DialogTitle>Campos vacios</DialogTitle>
               <DialogContent>
                 <DialogContentText>
                   Por favor, complete todos los campos correctamente antes de
@@ -401,6 +418,15 @@ export default function RegistrarUsuario() {
               </DialogActions>
             </Dialog>
 
+            <Dialog open={openErrorCrear} onClose={handleErrorCrearClose}>
+              <DialogTitle>Error al crear usuario</DialogTitle>
+              <DialogContent>
+                <DialogContentText>{errorMensaje}</DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleErrorCrearClose}>Cerrar</Button>
+              </DialogActions>
+            </Dialog>
             <Button
               variant="contained"
               color="error"
@@ -497,10 +523,21 @@ async function registrarNuevoUsuario(
     },
   };
 
-  const response = await fetch(url + "/crear", {
-    method: "POST",
-    headers: myHeaders,
-    body: JSON.stringify(data),
-  });
-  return response;
+   try {
+     const response = await fetch(url + "/crear", {
+       method: "POST",
+       headers: myHeaders,
+       body: JSON.stringify(data),
+     });
+
+     if (!response.ok) {
+       const errorResponse = await response.json();
+       throw new Error(errorResponse.mensaje);
+     }
+
+     return response; // Return the response on success
+   } catch (error) {
+     console.error(error);
+     throw error; // Re-throw the error to be caught in handleSave
+   }
 }

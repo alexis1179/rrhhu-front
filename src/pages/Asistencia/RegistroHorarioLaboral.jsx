@@ -41,7 +41,7 @@ export default function ResponderSolicitudes() {
   const [fecha, setFecha] = React.useState(dayjs());
   const [horasAusentes, setHorasAusentes] = useState(0);
   const [diasIncapacidad, setDiasIncapacidad] = useState(0);
-  const [guardarExitoso, setGuardarExitoso] = React.useState(false); 
+  const [guardarExitoso, setGuardarExitoso] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -164,7 +164,7 @@ export default function ResponderSolicitudes() {
                       value={fecha}
                       onChange={(newValue) => setFecha(newValue)}
                       views={["year", "month", "day"]}
-                      inputFormat="DD/MM/YYYY"
+                      format="DD/MM/YYYY"
                       sx={{ marginTop: 0 }}
                     />
                   </DemoItem>
@@ -419,21 +419,23 @@ export default function ResponderSolicitudes() {
         </DialogActions>
       </Dialog>
       <Dialog
-      open={guardarExitoso}
-      onClose={() => setGuardarExitoso(false)}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">Horas cargadas con éxito</DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          Las horas han sido cargadas con éxito.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => setGuardarExitoso(false)}>Aceptar</Button>
-      </DialogActions>
-    </Dialog>
+        open={guardarExitoso}
+        onClose={() => setGuardarExitoso(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Horas cargadas con éxito
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Las horas han sido cargadas con éxito.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setGuardarExitoso(false)}>Aceptar</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
@@ -537,7 +539,7 @@ async function registrarIncapacidades(diasIncapacidad, mes, year) {
   return response;
 }
 
-async function registrarVacaciones(fecha_inicio,fecha_fin, mes, year) {
+async function registrarVacaciones(fecha_inicio, fecha_fin, mes, year) {
   const userId = localStorage.getItem("UserId");
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
