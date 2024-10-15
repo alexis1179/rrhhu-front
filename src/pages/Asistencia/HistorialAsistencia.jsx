@@ -16,6 +16,7 @@ import "dayjs/locale/es";
 import url from "../../backUrl";
 import { set } from 'date-fns';
 import "../../Styles/HistorialAsistencia.css";
+import Loading from '../../Components/Loading';
 
 ChartJS.register(
     CategoryScale,
@@ -37,77 +38,100 @@ const Report = () => {
     const [data, setData] = useState(true);
     const [anios, setAnios] = useState([]);
     const [displayYear, setDisplayYear] = useState(year);
+    const [resultados, setResultado] = useState(false);
 
     const userId = localStorage.getItem("UserId");  // Obtenemos el ID del usuario logueado
 
     // Función para obtener las horas extra y trabajadas en asueto
     const fetchHoras = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const headers = {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            };
-            const [resDiurnas, resNocturnas, resAsueto, resDiurnasNormales] = await Promise.all([
-                fetch(`${url}/extras-diurnas/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers }),
-                fetch(`${url}/extras-nocturnas/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers }),
-                fetch(`${url}/asuetos-trabajados/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers }),
-                fetch(`${url}/carga-laboral-diurna/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers })
-            ]);
-            //Todos los registros
-            const diurnas = await resDiurnas.json();
-            //Registro filtrado del mes elegido
-            const diurnasData = diurnas.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
-            const nocturnas = await resNocturnas.json();
-            const nocturasData = nocturnas.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
-            const asueto = await resAsueto.json();
-            const asuetoData = asueto.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
-            const diurnasNormales = await resDiurnasNormales.json();
-            const diurnasNormalesData = diurnasNormales.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
+        let diurnasVal = 0;
+        let nocturnasVal = 0;
+        let asuetoVal = 0;
+        let diurnasNormalesVal = 0;
+        let diurnas = [];
+        let nocturnas = [];
+        let asueto = [];
+        let diurnasNormales = [];
 
+        const token = localStorage.getItem("token");
+        const headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+        try {
+
+            try {
+                const resDiurnas = await fetch(`${url}/extras-diurnas/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
+                diurnas = await resDiurnas.json();
+                diurnasVal = diurnas.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
+                if (diurnas.length > 0) {
+                    setExtraData(prevData => ({
+                        ...prevData,
+                        diurnas: parseFloat(diurnasVal.toFixed(1))
+                    }));
+                }
+            } catch (error) {
+            }
+
+            try {
+                const resNocturnas = await fetch(`${url}/extras-nocturnas/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
+                nocturnas = await resNocturnas.json();
+                nocturnasVal = nocturnas.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
+                if (nocturnas.length > 0) {
+                    setExtraData(prevData => ({
+                        ...prevData,
+                        nocturnas: parseFloat(nocturnasVal.toFixed(1))
+                    }));
+                }
+            } catch (error) {
+            }
+
+            try {
+                const resAsueto = await fetch(`${url}/asuetos-trabajados/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
+                asueto = await resAsueto.json();
+                asuetoVal = asueto.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
+                if (asueto.length > 0) {
+                    setExtraData(prevData => ({
+                        ...prevData,
+                        asueto: parseFloat(asuetoVal.toFixed(1))    
+                    }));
+                }
+            } catch (error) {
+            }
+
+            try {
+                const resDiurnasNormales = await fetch(`${url}/carga-laboral-diurna/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
+                diurnasNormales = await resDiurnasNormales.json();
+                diurnasNormalesVal = diurnasNormales.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
+                if (diurnasNormales.length > 0) {
+                    setExtraData(prevData => ({
+                        ...prevData,
+                        diurnasNormales: parseFloat(diurnasNormalesVal.toFixed(1))  
+                    }));
+                }
+            } catch (error) {
+            }
             const anio = (diurnas.map(registro => registro.año) + "," + nocturnas.map(registro => registro.año) + "," + asueto.map(registro => registro.año) + "," + diurnasNormales.map(registro => registro.año));
             const anioUnico = [...new Set(anio.split(","))].sort();
             setAnios(anioUnico);
-
-            //Verificar si hay registros para actualizarlos en el extraData
-            if (diurnas.length > 0) {
-                setExtraData(prevData => ({
-                    ...prevData,
-                    diurnas: diurnasData
-                }));
-            }
-
-            if (nocturnas.length > 0) {
-                setExtraData(prevData => ({
-                    ...prevData,
-                    nocturnas: nocturasData
-                }));
-            }
-
-            if (asueto.length > 0) {
-                setExtraData(prevData => ({
-                    ...prevData,
-                    asueto: asuetoData
-                }));
-            }
-
-            if (diurnasNormales.length > 0) {
-                setExtraData(prevData => ({
-                    ...prevData,
-                    diurnasNormales: diurnasNormalesData
-                }));
-            }
-
-            //Verificar si hay datos para mostrar
-            if (diurnasData === 0 && nocturasData === 0 && asuetoData === 0 && diurnasNormalesData === 0) {
+            if (diurnasVal === 0 && nocturnasVal === 0 && asuetoVal === 0 && diurnasNormalesVal === 0) {
                 setData(false);
             } else {
                 setData(true);
             }
-
             setLoading(false);
+
+            if(diurnas.length === 0 && nocturnas.length === 0 && asueto.length === 0 && diurnasNormales.length === 0){
+                setResultado(false);
+            }else{
+                setResultado(true);
+            }
+
         } catch (error) {
             console.error("Error al obtener datos:", error);
+            setData(false);
+            setLoading(false);
+            setResultado(false);
         }
     };
 
@@ -117,23 +141,13 @@ const Report = () => {
         fetchHoras();
     }, [mes, year]);
 
-    // Configuración del gráfico de barras
-    const barData = {
-        labels: ['Horas Diurnas', 'Horas Nocturnas', 'Horas Asueto'],
-        datasets: [{
-            label: 'Horas en el mes',
-            data: [extraData.diurnas, extraData.nocturnas, extraData.asueto],
-            backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726'],
-        }]
-    };
-
     // Configuración del gráfico de pastel
     const pieData = {
-        labels: ['Jornada Laboral','Extras Diurnas', 'Extras Nocturnas','Asueto'],
+        labels: ['Jornada Laboral', 'Extras Diurnas', 'Extras Nocturnas', 'Asueto'],
         datasets: [{
             label: 'Distribución Horas',
             data: [extraData.diurnasNormales, extraData.diurnas, extraData.nocturnas, extraData.asueto],
-            backgroundColor: ['#36A2EB', '#FFCE56', '#66BB6A','#FF6384'],
+            backgroundColor: ['#36A2EB', '#FFCE56', '#66BB6A', '#FF6384'],
             hoverOffset: 4
         }]
     };
@@ -166,26 +180,28 @@ const Report = () => {
             <Sidebar />
             <div style={{ textAlign: 'center', margin: '20px' }}>
                 <h1>Historial de asistencia - {capitalizeFirstLetter(dayjs().locale('es').month(mes - 1).format('MMMM'))} {displayYear}</h1>
-                <div className='filters'>
-                    <label>Seleccionar año: </label>
-                    <select value={year} onChange={(e) => setYear(e.target.value)}>
-                        {anios.map((anio) => (
-                            <option key={anio} value={anio}>
-                                {anio}
-                            </option>
-                        ))}
-                    </select>
-                    <label>Seleccionar mes: </label>
-                    <select value={mes} onChange={handleMonthChange}>
-                        {Array.from({ length: 12 }, (_, i) => (
-                            <option key={i} value={i + 1}>
-                                {capitalizeFirstLetter(dayjs().locale('es').month(i).format('MMMM'))}  {/* Capitaliza manualmente */}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                {resultados ?
+                    <div className='filters'>
+                        <label>Seleccionar año: </label>
+                        <select value={year} onChange={(e) => setYear(e.target.value)}>
+                            {anios.map((anio) => (
+                                <option key={anio} value={anio}>
+                                    {anio}
+                                </option>
+                            ))}
+                        </select>
+                        <label>Seleccionar mes: </label>
+                        <select value={mes} onChange={handleMonthChange}>
+                            {Array.from({ length: 12 }, (_, i) => (
+                                <option key={i} value={i + 1}>
+                                    {capitalizeFirstLetter(dayjs().locale('es').month(i).format('MMMM'))}  {/* Capitaliza manualmente */}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    : <></>}
                 {loading ?
-                    <p>Cargando datos...</p> : (
+                    <Loading/>: (
                         <>
                             {data ? (
                                 <div>
@@ -193,7 +209,7 @@ const Report = () => {
                                         <div style={{ width: '40%', margin: '10px' }}>
                                             <Pie data={pieData} options={options} />
                                         </div>
-                                        <div style={{display:'flex', flexDirection:'column'}}>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <div style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}>
                                                 <div style={{ width: '25vw', margin: '10px' }}>
                                                     <h2>Horas Diurnas</h2>
@@ -217,7 +233,7 @@ const Report = () => {
                                         </div>
                                     </div>
                                 </div>
-                            ) : <p>No hay datos para mostrar</p>}
+                            ) : <p>No hay registros</p>}
                         </>
                     )}
             </div>

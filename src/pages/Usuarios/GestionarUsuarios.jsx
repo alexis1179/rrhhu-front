@@ -22,6 +22,7 @@ import url from "../../backUrl";
 export default function GestionarUsuarios() {
   const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
+  const [usuariosActivos, setUsuariosActivos]=useState([]);
   const [searchText, setSearchText] = useState(""); // add a state for search text
   const [filteredUsuarios, setFilteredUsuarios] = useState([]); // add a state for filtered users
   let rol = localStorage.getItem("rol") == "ROLE_ADMIN";
@@ -29,7 +30,8 @@ export default function GestionarUsuarios() {
   useEffect(() => {
     obtenerUsuarios().then((respuesta) => {
       setUsuarios(respuesta);
-      setFilteredUsuarios(respuesta); // initialize filtered users with all users
+      setUsuariosActivos(respuesta.filter((usuario)=>usuario.estado=="Activo"));
+      setFilteredUsuarios(respuesta.filter((usuario)=>usuario.estado=="Activo")); // initialize filtered users with all users
     });
   }, []);
 
@@ -39,7 +41,10 @@ export default function GestionarUsuarios() {
     const filteredUsuarios = usuarios.filter((user) =>
       user.email.toLowerCase().includes(searchText)
     );
-    setFilteredUsuarios(filteredUsuarios);
+    if(searchText == "" || searchText == null){
+      setFilteredUsuarios(usuariosActivos)
+    }else{
+    setFilteredUsuarios(filteredUsuarios);}
   };
 
   return (
