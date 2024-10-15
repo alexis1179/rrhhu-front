@@ -134,9 +134,9 @@ export default function VisualizarUsuario() {
         sexo,
         rol
       );
-    setOpenDialogModificar(true);
-    setOpenDialogConfirmar(false);
-    setEdit(false);
+      setOpenDialogModificar(true);
+      setOpenDialogConfirmar(false);
+      setEdit(false);
     } catch (error) {
       console.error("Error al modificar el usuario:", error);
     }
@@ -175,9 +175,8 @@ export default function VisualizarUsuario() {
       setPhoneError(true);
     } else {
       setPhoneError(false);
-      setTelefono(telefono);
-      console.log("telefono : ", telefono);
     }
+    setTelefono(telefono); // Update the telefono state variable
   };
 
   const handleSalaryChange = (event) => {
@@ -299,9 +298,7 @@ export default function VisualizarUsuario() {
                     label="Teléfono"
                     value={telefono}
                     required
-                    onChange={(event) => {
-                      handlePhoneChange(event);
-                    }}
+                    onChange={handlePhoneChange} // Use the handlePhoneChange function
                     error={phoneError}
                     helperText={
                       phoneError
