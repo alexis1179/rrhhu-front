@@ -11,6 +11,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  InputAdornment,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import url from "../../backUrl";
@@ -23,7 +29,8 @@ export default function VisualizarUsuario() {
   const [error, setError] = useState(false);
   const [edit, setEdit] = useState(false);
   const [openDialogEstado, setOpenDialogEstado] = useState(false);
-  const [deshabilitarUsuario, setDeshabilitarUsuario] = useState(false);
+  const [openDialogDescartar, setOpenDialogDescartar] = useState(false);
+ // const [deshabilitarUsuario, setDeshabilitarUsuario] = useState(false);
   const [habilitarUsuario, setHabilitarUsuario] = useState(false);
   // Estados para los campos editables
   const [nombre, setNombre] = useState("");
@@ -40,6 +47,10 @@ export default function VisualizarUsuario() {
   const [fecha_ingreso, setFechaIngreso] = useState("");
   const [rol, setRol] = useState("");
 
+  // validaciones
+   
+    const [phoneError, setPhoneError] = useState(false);
+    const [salaryError, setSalaryError] = useState(false);
   // Estado para los valores originales
   const [valoresOriginales, setValoresOriginales] = useState({});
 
@@ -81,23 +92,22 @@ export default function VisualizarUsuario() {
         setSexo(data.sexo);
         setFechaIngreso(data.fecha_ingreso);
         setRol(data.roles[0].name);
+
+                if (data.estado === "Inactivo") {
+                  setHabilitarUsuario(true);
+                } else {
+                  setHabilitarUsuario(false);
+                }
+
       })
       .catch((error) => {
         setError("Error al obtener la información del usuario.");
         setCargando(false);
       });
 
-    if (estado == "Inactivo") {
-      setHabilitarUsuario(true);
-      setDeshabilitarUsuario(false);
-      console.log("Habilitar: ", habilitarUsuario);
-    } else {
-      setHabilitarUsuario(false);
-      setDeshabilitarUsuario(true);
-      console.log("Deshabilitar: ", deshabilitarUsuario);
-    }
   }, [id]);
 
+  
   const handleSave = () => {
     modificarUsuario(
       id,
@@ -114,8 +124,12 @@ export default function VisualizarUsuario() {
       salario
     );
     setEdit(false);
+    
   };
 
+  const handleDescartar = () => {
+    setOpenDialogDescartar(true);
+  }
   const handleCancel = () => {
     // Restaurar los valores originales
     setNombre(valoresOriginales.nombre);
@@ -126,6 +140,8 @@ export default function VisualizarUsuario() {
     setCargo(valoresOriginales.cargo);
     setSalario(valoresOriginales.salario);
     setEdit(false);
+    setOpenDialogDescartar(false)
+
   };
 
   if (error) {
@@ -136,61 +152,76 @@ export default function VisualizarUsuario() {
     );
   }
 
-  const handleCambiarEstadoUsuario = () => {
-    if (deshabilitarUsuario) {
-      modificarUsuario(
-        id,
-        "Inactivo",
-        nombre,
-        email,
-        password,
-        direccion,
-        telefono,
-        fecha_nacimiento,
-        dui,
-        cargo,
-        fecha_ingreso,
-        salario,
-        sexo,
-        rol
-      );
-    }
-    if (habilitarUsuario) {
-      modificarUsuario(
-        id,
-        "Activo",
-        nombre,
-        email,
-        password,
-        direccion,
-        telefono,
-        fecha_nacimiento,
-        dui,
-        cargo,
-        fecha_ingreso,
-        salario,
-        sexo,
-        rol
-      );
+
+
+  //validar formato telefono
+  const handlePhoneChange = (event) => {
+    const phoneRegex = /^\d{8}$/;
+    const telefono = event.target.value;
+    if (!phoneRegex.test(telefono)) {
+      setPhoneError(true);
     } else {
-      modificarUsuario(
-        id,
-        estado,
-        nombre,
-        email,
-        password,
-        direccion,
-        telefono,
-        fecha_nacimiento,
-        dui,
-        cargo,
-        fecha_ingreso,
-        salario,
-        sexo,
-        rol
-      );
+      setPhoneError(false);
+      setTelefono(telefono);
+      console.log("telefono : ", telefono);
     }
-    setEdit(false);
+  };
+
+const handleSalaryChange = (event) => {
+  const salario = event.target.value;
+  if (salario === "") {
+    setSalario(salario);
+    setSalaryError(false);
+  } else {
+    const salaryRegex = /^\d+(\.\d{1,2})?$/;
+    if (!salaryRegex.test(salario) || parseFloat(salario) <= 0) {
+      setSalaryError(true);
+    } else {
+      setSalaryError(false);
+      setSalario(salario);
+    }
+  }
+};
+
+  // validar cambio cargo
+    const handleCargoChange = (event) => {
+      const cargo = event.target.value;
+      let rolValue;
+      switch (cargo) {
+        case "RRHH":
+          rolValue = "RRHH";
+          break;
+        case "Administrador":
+          rolValue = "ADMIN";
+          break;
+        default:
+          rolValue = "USER";
+          break;
+      }
+      setRol(rolValue);
+      setCargo(cargo);
+      console.log("Cargo: ", cargo, " Rol: ", rolValue);
+    };
+
+  const handleCambiarEstadoUsuario = () => {
+    const nuevoEstado = habilitarUsuario ? "Activo" : "Inactivo";
+    modificarUsuario(
+      id,
+      nuevoEstado,
+      nombre,
+      email,
+      password,
+      direccion,
+      telefono,
+      fecha_nacimiento,
+      dui,
+      cargo,
+      fecha_ingreso,
+      salario,
+      sexo,
+      rol
+    );
+    setEstado(nuevoEstado);
     setOpenDialogEstado(false);
   };
 
@@ -222,7 +253,7 @@ export default function VisualizarUsuario() {
                     onChange={(e) => setNombre(e.target.value)}
                     variant="outlined"
                     fullWidth
-                    disabled={!edit}
+                    disabled
                   />
                 </Grid>
                 <Grid item xs={4}>
@@ -232,7 +263,7 @@ export default function VisualizarUsuario() {
                     onChange={(e) => setDui(e.target.value)}
                     variant="outlined"
                     fullWidth
-                    disabled={!edit}
+                    disabled
                   />
                 </Grid>
                 <Grid item xs={4}>
@@ -242,14 +273,23 @@ export default function VisualizarUsuario() {
                     onChange={(e) => setEmail(e.target.value)}
                     variant="outlined"
                     fullWidth
-                    disabled={!edit}
+                    disabled
                   />
                 </Grid>
                 <Grid item xs={4}>
                   <TextField
                     label="Teléfono"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    required
+                    onChange={(event) => {
+                      handlePhoneChange(event);
+                    }}
+                    error={phoneError}
+                    helperText={
+                      phoneError
+                        ? "Debe ser un número de teléfono con 8 caracteres"
+                        : ""
+                    }
                     variant="outlined"
                     fullWidth
                     disabled={!edit}
@@ -259,6 +299,7 @@ export default function VisualizarUsuario() {
                   <TextField
                     label="Dirección"
                     value={direccion}
+                    required
                     onChange={(e) => setDireccion(e.target.value)}
                     variant="outlined"
                     fullWidth
@@ -269,14 +310,29 @@ export default function VisualizarUsuario() {
               <Typography variant="h5">Información Laboral</Typography>
               <Grid container spacing={2}>
                 <Grid item xs={6}>
-                  <TextField
-                    label="Cargo"
-                    value={cargo}
-                    onChange={(e) => setCargo(e.target.value)}
-                    variant="outlined"
-                    fullWidth
-                    disabled={!edit}
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel id="cargo-label">Cargo</InputLabel>
+                    <Select
+                      labelId="cargo-label"
+                      label="Cargo"
+                      variant="outlined"
+                      required
+                      displayEmpty
+                      name="cargo"
+                      disabled={!edit}
+                      onChange={handleCargoChange}
+                      value={cargo}
+                    >
+                      <MenuItem value=""></MenuItem>
+                      <MenuItem value="RRHH">Personal de RRHH</MenuItem>
+                      <MenuItem value="Administrador">Administrador</MenuItem>
+                      <MenuItem value="Vendedor">Vendedor</MenuItem>
+                      <MenuItem value="Gerente">Gerente</MenuItem>
+                      <MenuItem value="Cajero">Cajero</MenuItem>
+                      <MenuItem value="Contador">Contador</MenuItem>
+                      <MenuItem value="IT">IT</MenuItem>
+                    </Select>
+                  </FormControl>
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
@@ -290,11 +346,27 @@ export default function VisualizarUsuario() {
                 <Grid item xs={6}>
                   <TextField
                     label="Salario"
-                    value={salario}
-                    onChange={(e) => setSalario(e.target.value)}
                     variant="outlined"
                     fullWidth
+                    required
+                    name="salario"
+                    value={salario}
                     disabled={!edit}
+                    onChange={(event) => {
+                      if (event.target.value !== "") {
+                        handleSalaryChange(event);
+                      } else {
+                        setSalario(event.target.value);
+                        setSalaryError(false);
+                      }
+                    }}
+                    error={salaryError}
+                    helperText={salaryError ? "Debe ser un monto positivo" : ""}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -312,7 +384,7 @@ export default function VisualizarUsuario() {
                   <Button
                     variant="contained"
                     color="error"
-                    onClick={handleCancel} // Cancelar edición
+                    onClick={handleDescartar} // Cancelar edición
                   >
                     Cancelar
                   </Button>
@@ -343,7 +415,7 @@ export default function VisualizarUsuario() {
                     Editar
                   </Button>
                 )}
-                {edit && deshabilitarUsuario ? (
+                {edit && !habilitarUsuario ? (
                   <Button
                     variant="contained"
                     color="secondary"
@@ -365,12 +437,37 @@ export default function VisualizarUsuario() {
             </div>
           )}
           <Dialog
+            open={openDialogDescartar}
+            onClose={() => setOpenDialogDescartar(false)}
+          >
+            <DialogTitle>Descartar cambios</DialogTitle>
+            <DialogContent>
+              ¿Está seguro de que desea descartar los cambios?
+              <DialogActions>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleCancel}
+                >
+                  Descartar
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setOpenDialogDescartar(false)}
+                >
+                  Seguir editando
+                </Button>
+              </DialogActions>
+            </DialogContent>
+          </Dialog>
+          <Dialog
             open={openDialogEstado}
             onClose={() => setOpenDialogEstado(false)}
           >
             <DialogTitle>Cambiar estado de usuario</DialogTitle>
             <DialogContent>
-              {deshabilitarUsuario ? (
+              {!habilitarUsuario ? (
                 <Typography variant="body1">
                   ¿Está seguro de que desea deshabilitar al usuario?
                 </Typography>
@@ -431,9 +528,9 @@ async function modificarUsuario(
   sexo,
   rol
 ) {
-  var myHeaders = new Headers();
+  /*var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("Authorization", "Bearer " + localStorage.getItem("token"));
+  myHeaders.append("Authorization", "Bearer " + localStorage.getItem("token"));*/
   const data = {
     nombre: nombre,
     email: email,
@@ -493,11 +590,36 @@ async function modificarUsuario(
       diciembre: 0,
     },
   };
-  const response = await fetch(url + "/modificar/" + id, {
+  /*const response = await fetch(url + "/modificar/" + id, {
     method: "PUT",
-    headers: myHeaders,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem("token"),
+    },
     body: JSON.stringify({ data }),
   });
+  */
+   try {
+
+     const response = await fetch(url + "/modificar/" + id, {
+       method: "PUT",
+       headers: {
+         "Content-Type": "application/json",
+         Authorization: "Bearer " + localStorage.getItem("token"),
+       },
+       body: JSON.stringify(data),
+     });
+
+     if (response.ok) {
+       const result = await response.json();
+       console.log("Empleado actualizado:", result);
+     } else {
+       console.error("Error al actualizar el empleado:", response.statusText);
+     }
+   } catch (error) {
+     console.error("Error en la solicitud:", error);
+   }
+
 
   return data;
 }
