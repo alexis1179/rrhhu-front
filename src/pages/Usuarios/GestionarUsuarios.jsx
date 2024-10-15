@@ -79,6 +79,7 @@ export default function GestionarUsuarios() {
                     <TableCell align="center">DUI</TableCell>
                     <TableCell align="center">Cargo</TableCell>
                     <TableCell align="center">Correo</TableCell>
+                    <TableCell align="center">Estado</TableCell>
                     <TableCell align="center">Acciones</TableCell>
                   </TableRow>
                 </TableHead>
@@ -90,6 +91,7 @@ export default function GestionarUsuarios() {
                         <TableCell align="center">{usuario.dui}</TableCell>
                         <TableCell align="center">{usuario.cargo}</TableCell>
                         <TableCell align="center">{usuario.email}</TableCell>
+                        <TableCell align="center">{usuario.estado}</TableCell>
                         <TableCell align="center">
                           <Icon>
                             <Reorder
