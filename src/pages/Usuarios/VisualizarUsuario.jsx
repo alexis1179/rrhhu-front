@@ -28,9 +28,12 @@ export default function VisualizarUsuario() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(false);
   const [edit, setEdit] = useState(false);
+  //mensajes
   const [openDialogEstado, setOpenDialogEstado] = useState(false);
   const [openDialogDescartar, setOpenDialogDescartar] = useState(false);
- // const [deshabilitarUsuario, setDeshabilitarUsuario] = useState(false);
+  const [openDialogModificar, setOpenDialogModificar] = useState(false);
+  const [openDialogConfirmar, setOpenDialogConfirmar] = useState(false);
+
   const [habilitarUsuario, setHabilitarUsuario] = useState(false);
   // Estados para los campos editables
   const [nombre, setNombre] = useState("");
@@ -48,9 +51,10 @@ export default function VisualizarUsuario() {
   const [rol, setRol] = useState("");
 
   // validaciones
-   
-    const [phoneError, setPhoneError] = useState(false);
-    const [salaryError, setSalaryError] = useState(false);
+
+  const [phoneError, setPhoneError] = useState(false);
+  const [salaryError, setSalaryError] = useState(false);
+
   // Estado para los valores originales
   const [valoresOriginales, setValoresOriginales] = useState({});
 
@@ -93,43 +97,54 @@ export default function VisualizarUsuario() {
         setFechaIngreso(data.fecha_ingreso);
         setRol(data.roles[0].name);
 
-                if (data.estado === "Inactivo") {
-                  setHabilitarUsuario(true);
-                } else {
-                  setHabilitarUsuario(false);
-                }
-
+        if (data.estado === "Inactivo") {
+          setHabilitarUsuario(true);
+        } else {
+          setHabilitarUsuario(false);
+        }
       })
       .catch((error) => {
         setError("Error al obtener la información del usuario.");
         setCargando(false);
       });
-
   }, [id]);
 
-  
-  const handleSave = () => {
-    modificarUsuario(
-      id,
-      estado,
-      nombre,
-      email,
-      password,
-      direccion,
-      telefono,
-      fecha_nacimiento,
-      dui,
-      cargo,
-      fecha_ingreso,
-      salario
-    );
+  const isValidForm = () => {
+    return !phoneError && !salaryError && direccion !== "" && cargo !== "";
+  };
+
+  const handleSave = async () => {
+    setOpenDialogConfirmar(true);
+  };
+  const handleConfirmar = async () => {
+    try {
+      await modificarUsuario(
+        id,
+        estado,
+        nombre,
+        email,
+        password,
+        direccion,
+        telefono,
+        fecha_nacimiento,
+        dui,
+        cargo,
+        fecha_ingreso,
+        salario,
+        sexo,
+        rol
+      );
+    setOpenDialogModificar(true);
+    setOpenDialogConfirmar(false);
     setEdit(false);
-    
+    } catch (error) {
+      console.error("Error al modificar el usuario:", error);
+    }
   };
 
   const handleDescartar = () => {
     setOpenDialogDescartar(true);
-  }
+  };
   const handleCancel = () => {
     // Restaurar los valores originales
     setNombre(valoresOriginales.nombre);
@@ -139,9 +154,9 @@ export default function VisualizarUsuario() {
     setDireccion(valoresOriginales.direccion);
     setCargo(valoresOriginales.cargo);
     setSalario(valoresOriginales.salario);
+    setRol(valoresOriginales.rol);
     setEdit(false);
-    setOpenDialogDescartar(false)
-
+    setOpenDialogDescartar(false);
   };
 
   if (error) {
@@ -151,8 +166,6 @@ export default function VisualizarUsuario() {
       </Typography>
     );
   }
-
-
 
   //validar formato telefono
   const handlePhoneChange = (event) => {
@@ -167,44 +180,49 @@ export default function VisualizarUsuario() {
     }
   };
 
-const handleSalaryChange = (event) => {
-  const salario = event.target.value;
-  if (salario === "") {
-    setSalario(salario);
-    setSalaryError(false);
-  } else {
-    const salaryRegex = /^\d+(\.\d{1,2})?$/;
-    if (!salaryRegex.test(salario) || parseFloat(salario) <= 0) {
-      setSalaryError(true);
-    } else {
-      setSalaryError(false);
+  const handleSalaryChange = (event) => {
+    const salario = event.target.value;
+    if (salario === "") {
       setSalario(salario);
+      setSalaryError(false);
+    } else {
+      const salaryRegex = /^\d+(\.\d{1,2})?$/;
+      if (!salaryRegex.test(salario) || parseFloat(salario) <= 0) {
+        setSalaryError(true);
+      } else {
+        setSalaryError(false);
+        setSalario(salario);
+      }
     }
-  }
-};
+  };
 
   // validar cambio cargo
-    const handleCargoChange = (event) => {
-      const cargo = event.target.value;
-      let rolValue;
-      switch (cargo) {
-        case "RRHH":
-          rolValue = "RRHH";
-          break;
-        case "Administrador":
-          rolValue = "ADMIN";
-          break;
-        default:
-          rolValue = "USER";
-          break;
-      }
-      setRol(rolValue);
-      setCargo(cargo);
-      console.log("Cargo: ", cargo, " Rol: ", rolValue);
-    };
+  const handleCargoChange = (event) => {
+    const cargo = event.target.value;
+    let rolValue;
+    switch (cargo) {
+      case "RRHH":
+        rolValue = "RRHH";
+        break;
+      case "Administrador":
+        rolValue = "ADMIN";
+        break;
+      default:
+        rolValue = "USER";
+        break;
+    }
+    setRol(rolValue);
+    setCargo(cargo);
+    console.log("Cargo: ", cargo, " Rol: ", rolValue);
+  };
 
   const handleCambiarEstadoUsuario = () => {
     const nuevoEstado = habilitarUsuario ? "Activo" : "Inactivo";
+    setTelefono(valoresOriginales.telefono);
+    setDireccion(valoresOriginales.direccion);
+    setCargo(valoresOriginales.cargo);
+    setSalario(valoresOriginales.salario);
+    setRol(valoresOriginales.rol);
     modificarUsuario(
       id,
       nuevoEstado,
@@ -402,7 +420,8 @@ const handleSalaryChange = (event) => {
                   <Button
                     variant="contained"
                     color="success"
-                    onClick={handleSave} // Guardar cambios
+                    onClick={handleSave}
+                    disabled={!isValidForm()}
                   >
                     Guardar Cambios
                   </Button>
@@ -436,6 +455,54 @@ const handleSalaryChange = (event) => {
               </div>
             </div>
           )}
+          <Dialog
+            open={openDialogConfirmar}
+            onClose={() => setOpenDialogConfirmar(false)}
+          >
+            <DialogTitle>Actualizar usuario</DialogTitle>
+            <DialogContent>
+              <Typography variant="body1">
+                ¿Está seguro de que desea guardar los cambios?
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => setOpenDialogConfirmar(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleConfirmar}
+              >
+                Confirmar
+              </Button>
+            </DialogActions>
+          </Dialog>
+          <Dialog
+            open={openDialogModificar}
+            onClose={() => setOpenDialogModificar(false)}
+          >
+            <DialogTitle>actualizar usuario</DialogTitle>
+            <DialogContent>
+              <Typography variant="body1">
+                Usuario actualizado con éxito
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setOpenDialogModificar(false)}
+              >
+                Cerrar
+              </Button>
+            </DialogActions>
+          </Dialog>
+
           <Dialog
             open={openDialogDescartar}
             onClose={() => setOpenDialogDescartar(false)}
@@ -599,27 +666,25 @@ async function modificarUsuario(
     body: JSON.stringify({ data }),
   });
   */
-   try {
+  try {
+    const response = await fetch(url + "/modificar/" + id, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      body: JSON.stringify(data),
+    });
 
-     const response = await fetch(url + "/modificar/" + id, {
-       method: "PUT",
-       headers: {
-         "Content-Type": "application/json",
-         Authorization: "Bearer " + localStorage.getItem("token"),
-       },
-       body: JSON.stringify(data),
-     });
-
-     if (response.ok) {
-       const result = await response.json();
-       console.log("Empleado actualizado:", result);
-     } else {
-       console.error("Error al actualizar el empleado:", response.statusText);
-     }
-   } catch (error) {
-     console.error("Error en la solicitud:", error);
-   }
-
+    if (response.ok) {
+      const result = await response.json();
+      console.log("Empleado actualizado:", result);
+    } else {
+      console.error("Error al actualizar el empleado:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error en la solicitud:", error);
+  }
 
   return data;
 }
