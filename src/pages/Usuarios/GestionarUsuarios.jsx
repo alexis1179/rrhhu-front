@@ -14,6 +14,7 @@ import {
   TableBody,
 } from "@mui/material";
 import { Groups, Reorder } from "@mui/icons-material";
+import * as XLSX from "xlsx";
 
 import "../../Styles/GestionarUsuarios.css";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +23,8 @@ import url from "../../backUrl";
 export default function GestionarUsuarios() {
   const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
-  const [usuariosActivos, setUsuariosActivos]=useState([]);
+  const [dataUsuarios, setDataUsuarios] = useState();
+  const [usuariosActivos, setUsuariosActivos] = useState([]);
   const [searchText, setSearchText] = useState(""); // add a state for search text
   const [filteredUsuarios, setFilteredUsuarios] = useState([]); // add a state for filtered users
   let rol = localStorage.getItem("rol") == "ROLE_ADMIN";
@@ -30,8 +32,9 @@ export default function GestionarUsuarios() {
   useEffect(() => {
     obtenerUsuarios().then((respuesta) => {
       setUsuarios(respuesta);
-      setUsuariosActivos(respuesta.filter((usuario)=>usuario.estado=="Activo"));
-      setFilteredUsuarios(respuesta.filter((usuario)=>usuario.estado=="Activo")); // initialize filtered users with all users
+      setDataUsuarios(respuesta.map(({password, ...item}) => item));
+      setUsuariosActivos(respuesta.filter((usuario) => usuario.estado == "Activo"));
+      setFilteredUsuarios(respuesta.filter((usuario) => usuario.estado == "Activo"));
     });
   }, []);
 
@@ -41,11 +44,19 @@ export default function GestionarUsuarios() {
     const filteredUsuarios = usuarios.filter((user) =>
       user.email.toLowerCase().includes(searchText)
     );
-    if(searchText == "" || searchText == null){
+    if (searchText == "" || searchText == null) {
       setFilteredUsuarios(usuariosActivos)
-    }else{
-    setFilteredUsuarios(filteredUsuarios);}
+    } else {
+      setFilteredUsuarios(filteredUsuarios);
+    }
   };
+
+  const exportToExcel = (data, filename) => {
+    const workBook = XLSX.utils.book_new();
+    const workSheet = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(workBook, workSheet, "Usuarios");
+    XLSX.writeFile(workBook, `${filename}.xlsx`);
+  }
 
   return (
     <>
@@ -69,10 +80,14 @@ export default function GestionarUsuarios() {
               />
             </div>
             <div className="search-right">
-              {rol ? 
-              <Button variant="contained" color="success" onClick={() => navigate("/usuario/registrar")}>
-                Nuevo Usuario
-              </Button>:<></>}
+              {rol ?
+                <Button variant="contained" color="success" onClick={() => navigate("/usuario/registrar")}>
+                  Nuevo Usuario
+                </Button> : <></>}
+              {rol ?
+                <Button variant="text" color="info" onClick={() => exportToExcel(dataUsuarios, 'usuarios')}>
+                  Exportar a Excel
+                </Button> : <></>}
             </div>
           </div>
           <div className="table">

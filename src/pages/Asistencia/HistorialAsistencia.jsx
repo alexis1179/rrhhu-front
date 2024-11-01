@@ -17,6 +17,7 @@ import url from "../../backUrl";
 import { set } from 'date-fns';
 import "../../Styles/HistorialAsistencia.css";
 import Loading from '../../Components/Loading';
+import { useNavigate, useParams } from "react-router-dom";
 
 ChartJS.register(
     CategoryScale,
@@ -40,7 +41,13 @@ const Report = () => {
     const [displayYear, setDisplayYear] = useState(year);
     const [resultados, setResultado] = useState(false);
 
-    const userId = localStorage.getItem("UserId");  // Obtenemos el ID del usuario logueado
+    const user = localStorage.getItem("UserId");  // Obtenemos el ID del usuario logueado
+    const { id } = useParams();
+    if (id != null) {
+        var userId = id;
+    } else {
+        var userId = user;
+    }
 
     // Función para obtener las horas extra y trabajadas en asueto
     const fetchHoras = async () => {
@@ -93,7 +100,7 @@ const Report = () => {
                 if (asueto.length > 0) {
                     setExtraData(prevData => ({
                         ...prevData,
-                        asueto: parseFloat(asuetoVal.toFixed(1))    
+                        asueto: parseFloat(asuetoVal.toFixed(1))
                     }));
                 }
             } catch (error) {
@@ -106,7 +113,7 @@ const Report = () => {
                 if (diurnasNormales.length > 0) {
                     setExtraData(prevData => ({
                         ...prevData,
-                        diurnasNormales: parseFloat(diurnasNormalesVal.toFixed(1))  
+                        diurnasNormales: parseFloat(diurnasNormalesVal.toFixed(1))
                     }));
                 }
             } catch (error) {
@@ -121,9 +128,9 @@ const Report = () => {
             }
             setLoading(false);
 
-            if(diurnas.length === 0 && nocturnas.length === 0 && asueto.length === 0 && diurnasNormales.length === 0){
+            if (diurnas.length === 0 && nocturnas.length === 0 && asueto.length === 0 && diurnasNormales.length === 0) {
                 setResultado(false);
-            }else{
+            } else {
                 setResultado(true);
             }
 
@@ -201,7 +208,7 @@ const Report = () => {
                     </div>
                     : <></>}
                 {loading ?
-                    <Loading/>: (
+                    <Loading /> : (
                         <>
                             {data ? (
                                 <div>

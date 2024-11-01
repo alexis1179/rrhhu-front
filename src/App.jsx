@@ -48,6 +48,7 @@ const App = () => {
           <Route element={<RequireAuth isLogged={isLogged} allowedRoles={["ROLE_ADMIN", "ROLE_RRHH"]} />}>
             <Route path="/usuarios" element={<GestionarUsuarios />} />
             <Route path="/usuario/:id" element={<VisualizarUsuario />} />
+            <Route path="/asistencia/historial/:id" element={<HistorialAsistencia />} />
           </Route>
           {/* Rutas protegidas */}
           {/* Se requiere autenticación para acceder a estas rutas, permitido solo para el rol ROLE_ADMIN*/}

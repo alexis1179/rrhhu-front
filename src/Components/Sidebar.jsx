@@ -7,7 +7,7 @@ import image from "../image/DSI logo 2.png";
 
 export default function Sidebar() {
   let navigate = useNavigate();
-  let logged = localStorage.getItem("isLogged")==="true";
+  let logged = (localStorage.getItem("isLogged") === "true");
   let rrhh = localStorage.getItem("rol") == "ROLE_RRHH";
   let admin = localStorage.getItem("rol") == "ROLE_ADMIN";
   let user = localStorage.getItem("rol") == "ROLE_USER";
@@ -21,7 +21,10 @@ export default function Sidebar() {
     <>
       <div className="side-section">
         <div className="title-navbar">
-          <img src={image} alt="logo" className="logo" onClick={() => navigate("/dashboard")} />
+          {logged ?
+            <img src={image} alt="logo" className="logo" onClick={() => navigate("/dashboard")} />
+            : <img src={image} alt="logo" className="logo"/>
+          }
         </div>
         {logged ? (
           <div className="options">

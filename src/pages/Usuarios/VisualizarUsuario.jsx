@@ -454,6 +454,13 @@ export default function VisualizarUsuario() {
                   </Button>
                 ) : null}
               </div>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate(`/asistencia/historial/${id}`)}
+              >
+                Historial de Asistencia
+              </Button>
             </div>
           )}
           <Dialog
