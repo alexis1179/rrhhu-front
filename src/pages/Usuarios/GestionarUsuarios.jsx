@@ -29,14 +29,16 @@ export default function GestionarUsuarios() {
   const [filteredUsuarios, setFilteredUsuarios] = useState([]); // add a state for filtered users
   let rol = localStorage.getItem("rol") == "ROLE_ADMIN";
 
+
   useEffect(() => {
+    const idOcultos = [1, 2, 3];
     obtenerUsuarios().then((respuesta) => {
-      setUsuarios(respuesta);
-      setDataUsuarios(respuesta.map(({password, planillaEmpleado, cuenta_planillera, horasDiurnas, horasNocturnas, roles, solicitudesDiasLibres, incapacidadDiasUsuarios, asuetoTrabajadoDiasUsuarios, cargaLaboralDiurnaUsuarios, extrasDiurnas,	extrasNocturnas,	ausenciaDiaUsuarios,	vacacionesDiasUsuarios, salario_neto, ...item}) => item));
-      setUsuariosActivos(respuesta.filter((usuario) => usuario.estado == "Activo"));
-      setFilteredUsuarios(respuesta.filter((usuario) => usuario.estado == "Activo"));
-    });
-  }, []);
+      setUsuarios(respuesta.filter((usuario) => !idOcultos.includes(usuario.id)));
+      setDataUsuarios(respuesta.filter((usuario) => !idOcultos.includes(usuario.id)).map(({password, planillaEmpleado, cuenta_planillera, horasDiurnas, horasNocturnas, roles, solicitudesDiasLibres, incapacidadDiasUsuarios, asuetoTrabajadoDiasUsuarios, cargaLaboralDiurnaUsuarios, extrasDiurnas,	extrasNocturnas,	ausenciaDiaUsuarios,	vacacionesDiasUsuarios, salario_neto, ...item}) => item));
+      setUsuariosActivos(respuesta.filter((usuario) => usuario.estado == "Activo" && !idOcultos.includes(usuario.id)));
+      setFilteredUsuarios(respuesta.filter((usuario) => (usuario.estado == "Activo" && !idOcultos.includes(usuario.id))));
+    });
+  }, []);
 
   const handleSearch = (event) => {
     const searchText = event.target.value.toLowerCase();

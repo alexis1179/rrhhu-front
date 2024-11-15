@@ -89,10 +89,10 @@ export default function Sidebar() {
                         Reporte general de asistencia
                       </Typography>
                       <Typography
-                        onClick={() => navigate("/Dashboard")}
+                        onClick={() => navigate("/reportes/descuentos")}
                         style={{ cursor: "pointer" }}
                       >
-                        Reporte 2
+                        Reporte general de descuentos obligatorios
                       </Typography>
                     </div>
                   )}

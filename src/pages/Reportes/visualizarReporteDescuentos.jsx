@@ -29,7 +29,7 @@ ChartJS.register(
     Legend
 );
 
-const VisualizarReporteAsistenciaGeneral = () => {
+const VisualizarReporteDescuentos = () => {
     const [fecha, setFecha] = React.useState(dayjs());  // Para obtener la fecha actual
     const [mes, setMes] = useState(fecha.month() + 1);  // Guardamos el mes actual
     const [mesLetras, setMesLetras] = useState(fecha.locale('es').format('MMMM'));  // Guardamos el mes actual en letras
@@ -40,6 +40,10 @@ const VisualizarReporteAsistenciaGeneral = () => {
     const [anios, setAnios] = useState([]);
     const [displayYear, setDisplayYear] = useState(year);
     const [resultados, setResultado] = useState(false);
+    const [usuarios, setUsuario] = useState([]);
+    const [isss, setIsss] = useState();
+    const [afp, setAfp] = useState();
+    const [renta, setRenta] = useState();
 
     const user = localStorage.getItem("UserId");  // Obtenemos el ID del usuario logueado
     const { id } = useParams();
@@ -47,6 +51,27 @@ const VisualizarReporteAsistenciaGeneral = () => {
         var userId = id;
     } else {
         var userId = user;
+    }
+
+    const obtenerUsuarios = async () => {
+        const idOcultos = [1, 2, 3];
+        var usuarios;
+        console.log("obtener usuarios");
+        try {
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Authorization", "Bearer " + localStorage.getItem("token"));
+            const response = await fetch(url + "/usuarios", {
+                method: "GET",
+                headers: myHeaders,
+            });
+            usuarios = await response.json();
+            setUsuario(usuarios.filter((usuario) => !idOcultos.includes(usuario.id)));
+        } catch (error) {
+            console.log(error);
+        }
+        
+
     }
 
     // Función para obtener las horas extra y trabajadas en asueto
@@ -143,7 +168,9 @@ const VisualizarReporteAsistenciaGeneral = () => {
     };
 
     useEffect(() => {
+        console.log("useEffect");
         setLoading(true);
+        obtenerUsuarios();
         setDisplayYear(year);
         fetchHoras();
     }, [mes, year]);
@@ -186,7 +213,7 @@ const VisualizarReporteAsistenciaGeneral = () => {
         <>
             <Sidebar />
             <div style={{ textAlign: 'center', margin: '20px' }}>
-                <h1>Reporte de asistencia general - {capitalizeFirstLetter(dayjs().locale('es').month(mes - 1).format('MMMM'))} {displayYear}</h1>
+                <h1>Reporte de descuentos - {capitalizeFirstLetter(dayjs().locale('es').month(mes - 1).format('MMMM'))} {displayYear}</h1>
                 {resultados ?
                     <div className='filters'>
                         <label>Seleccionar año: </label>
@@ -248,5 +275,7 @@ const VisualizarReporteAsistenciaGeneral = () => {
     );
 };
 
-export default VisualizarReporteAsistenciaGeneral;
+
+
+export default VisualizarReporteDescuentos;
 
