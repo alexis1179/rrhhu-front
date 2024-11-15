@@ -32,17 +32,17 @@ export default function VisualizarPlanillaUsuario() {
   const [displayYear, setDisplayYear] = useState(year);
 
   const fetchData = async () => {
-    const apiUrl = `${url}/planilla/${id}`;
+    const apiUrl = `${url}/planillas/${id}`;
     console.log("Fetching data from:", apiUrl); // Log the URL
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        myHeaders.append(
-          "Authorization",
-          "Bearer " + localStorage.getItem("token")
-        );
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append(
+      "Authorization",
+      "Bearer " + localStorage.getItem("token")
+    );
     try {
       const response = await fetch(apiUrl, {
-        method: "POST",
+        method: "GET",
         headers: myHeaders,
       });
       if (!response.ok) {
