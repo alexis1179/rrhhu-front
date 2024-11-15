@@ -1,0 +1,22 @@
+.header-container {
+    display: flex;                
+    align-items: center;          
+    justify-content: center;      
+    margin-bottom: 20px;         
+}
+
+.content {
+    text-align: center;           
+}
+
+.table-header-cell {
+  color: white !important;                /* Force white text color */
+  padding: 10px;                         /* Padding inside the cell */
+  font-weight: bold !important;          /* Force bold text */
+  background-color: #03071e;             /* Dark background color */
+  text-align: center;                    /* Center align text */
+}
+
+.table-header-cell:last-child {
+  border-right: none;            /* Remove right border from the last cell */
+}

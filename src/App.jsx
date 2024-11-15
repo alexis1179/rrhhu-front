@@ -14,6 +14,7 @@ import RegistroHorarioLaboral from "./pages/Asistencia/RegistroHorarioLaboral";
 import VisualizarUsuario from "./pages/Usuarios/VisualizarUsuario";
 import HistorialAsistencia from "./pages/Asistencia/HistorialAsistencia.jsx";
 import UsuarioInactivo from "./pages/Autenticacion/UsuarioInactivo";
+import VisualizarPlanillaUsuario from "./pages/Planilla/VisualizarPlanillaUsuario.jsx";
 
 const App = () => {
   const [isLogged, setIsLogged] = useState(false);
@@ -35,34 +36,74 @@ const App = () => {
 
           {/* Rutas protegidas */}
           {/* Se requiere autenticación para acceder a estas rutas, permitido para TODOS los roles*/}
-          <Route element={<RequireAuth isLogged={isLogged} allowedRoles={["ROLE_ADMIN", "ROLE_RRHH", "ROLE_USER"]} />}>
+          <Route
+            element={
+              <RequireAuth
+                isLogged={isLogged}
+                allowedRoles={["ROLE_ADMIN", "ROLE_RRHH", "ROLE_USER"]}
+              />
+            }
+          >
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/asistencia/inicio" element={<PantallaInicioAsistencia />} />
-            <Route path="/asistencia/registrar" element={<RegistroHorarioLaboral />} />
-            <Route path="/asistencia/historial" element={<HistorialAsistencia />} />
+            <Route
+              path="/asistencia/inicio"
+              element={<PantallaInicioAsistencia />}
+            />
+            <Route
+              path="/asistencia/registrar"
+              element={<RegistroHorarioLaboral />}
+            />
+            <Route
+              path="/asistencia/historial"
+              element={<HistorialAsistencia />}
+            />
             <Route path="/libres/solicitar" element={<SolicitarDiasLibres />} />
+            <Route
+              path="/nomina/visualizarPlanillaUsuario/:id"
+              element={<VisualizarPlanillaUsuario />}
+            />
           </Route>
 
           {/* Rutas protegidas */}
           {/* Se requiere autenticación para acceder a estas rutas, permitido para ADMIN y RRHH*/}
-          <Route element={<RequireAuth isLogged={isLogged} allowedRoles={["ROLE_ADMIN", "ROLE_RRHH"]} />}>
+          <Route
+            element={
+              <RequireAuth
+                isLogged={isLogged}
+                allowedRoles={["ROLE_ADMIN", "ROLE_RRHH"]}
+              />
+            }
+          >
             <Route path="/usuarios" element={<GestionarUsuarios />} />
             <Route path="/usuario/:id" element={<VisualizarUsuario />} />
-            <Route path="/asistencia/historial/:id" element={<HistorialAsistencia />} />
+            <Route
+              path="/asistencia/historial/:id"
+              element={<HistorialAsistencia />}
+            />
           </Route>
           {/* Rutas protegidas */}
           {/* Se requiere autenticación para acceder a estas rutas, permitido solo para el rol ROLE_ADMIN*/}
-          <Route element={<RequireAuth isLogged={isLogged} allowedRoles={"ROLE_ADMIN"} />}>
+          <Route
+            element={
+              <RequireAuth isLogged={isLogged} allowedRoles={"ROLE_ADMIN"} />
+            }
+          >
             <Route path="/usuario/registrar" element={<RegistrarUsuario />} />
           </Route>
 
           {/* Rutas protegidas */}
           {/* Se requiere autenticación para acceder a estas rutas, permitido solo para el rol ROLE_RRHH*/}
-          <Route element={<RequireAuth isLogged={isLogged} allowedRoles={"ROLE_RRHH"} />}>
-            <Route path="/solicitud/responder/:idUser/:idSolicitud" element={<ResponderSolicitudes />} />
-            <Route path="/solicitudes" element={<GestionarSolicitudes />} />            
+          <Route
+            element={
+              <RequireAuth isLogged={isLogged} allowedRoles={"ROLE_RRHH"} />
+            }
+          >
+            <Route
+              path="/solicitud/responder/:idUser/:idSolicitud"
+              element={<ResponderSolicitudes />}
+            />
+            <Route path="/solicitudes" element={<GestionarSolicitudes />} />
           </Route>
-
         </Routes>
       )}
     </BrowserRouter>

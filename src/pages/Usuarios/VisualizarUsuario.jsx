@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../../Components/Sidebar";
 import Loading from "../../Components/Loading";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+import { set } from "date-fns";
+import "../../Styles/VisualizarPlanillaUsuario.css";
 import "../../Styles/RegistrarUsuario.css";
 import {
   Button,
@@ -50,7 +54,11 @@ export default function VisualizarUsuario() {
   const [sexo, setSexo] = useState("");
   const [fecha_ingreso, setFechaIngreso] = useState("");
   const [rol, setRol] = useState("");
-
+  //fecha planilla
+  const [fecha, setFecha] = React.useState(dayjs()); // Para obtener la fecha actual
+  const [mes, setMes] = useState(fecha.month() + 1); // Guardamos el mes actual
+  const [mesLetras, setMesLetras] = useState(fecha.locale("es").format("MMMM")); // Guardamos el mes actual en letras
+  const [year, setYear] = useState(fecha.year().toString()); // Guardamos el año actual
   // validaciones
 
   const [phoneError, setPhoneError] = useState(false);
@@ -158,6 +166,31 @@ export default function VisualizarUsuario() {
     setRol(valoresOriginales.rol);
     setEdit(false);
     setOpenDialogDescartar(false);
+  };
+
+  const handleGenerarPlanilla = async () => {
+    const apiUrl = `${url}/planilla/crear/${id}/mes/${mesLetras}/anio/${year}`;
+    console.log("Fetching data from:", apiUrl); // Log the URL
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append(
+      "Authorization",
+      "Bearer " + localStorage.getItem("token")
+    );
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: myHeaders,
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("DATA", data); // Log the fetched data
+      navigate(`/nomina/visualizarPlanillaUsuario/${id}`); // Use the id from useParams
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
 
   if (error) {
@@ -460,6 +493,13 @@ export default function VisualizarUsuario() {
                 onClick={() => navigate(`/asistencia/historial/${id}`)}
               >
                 Historial de Asistencia
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleGenerarPlanilla} // Call the function directly
+              >
+                Generar planilla de pago de {mesLetras}
               </Button>
             </div>
           )}
