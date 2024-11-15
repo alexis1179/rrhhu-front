@@ -9,21 +9,26 @@ import { set } from "date-fns";
 import "../../Styles/VisualizarPlanillaUsuario.css";
 
 import {
-  Button,
   Grid,
   Typography,
-  TextField,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
 } from "@mui/material";
 
 export default function VisualizarPlanillaUsuario() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [data, setData] = React.useState([]);
+    const [selectedPlanilla, setSelectedPlanilla] = useState(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
   const [fecha, setFecha] = React.useState(dayjs()); // Para obtener la fecha actual
   const [mes, setMes] = useState(fecha.month() + 1); // Guardamos el mes actual
   const [mesLetras, setMesLetras] = useState(fecha.locale("es").format("MMMM")); // Guardamos el mes actual en letras
@@ -33,7 +38,6 @@ export default function VisualizarPlanillaUsuario() {
 
   const fetchData = async () => {
     const apiUrl = `${url}/planillas/${id}`;
-    console.log("Fetching data from:", apiUrl); // Log the URL
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append(
@@ -50,7 +54,26 @@ export default function VisualizarPlanillaUsuario() {
       }
       const data = await response.json();
       setData(data);
-      console.log("DATA", data); // Log the fetched data
+      console.log("Planillas", data); // Revisar las planillas del usuario
+
+      // Filter the data for matches based on mes and anio
+      const filteredData = data.filter(
+        (item) => item.mes === mesLetras && item.anio === year
+      );
+
+      // Check for matches
+      if (filteredData.length === 0) {
+        // No matches found
+        setDialogOpen(true);
+      } else {
+        // Select the item with the highest ID
+        const highestIdItem = filteredData.reduce((prev, current) => {
+          return prev.id > current.id ? prev : current;
+        });
+        setSelectedPlanilla(highestIdItem);
+        console.log("HighestIdItem ", highestIdItem);
+        console.log("Selected planilla ", selectedPlanilla);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -60,6 +83,13 @@ export default function VisualizarPlanillaUsuario() {
     fetchData();
   }, [id, mes, year]); // Add dependencies to ensure fetch is called when these change
 
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    navigate("/dashboard"); // Navigate back to the dashboard
+  };
+    const formatDate = (dateString) => {
+      return dayjs(dateString).locale("es").format("DD/MMMM/YYYY");
+    };
   return (
     <>
       <Sidebar />
@@ -82,26 +112,34 @@ export default function VisualizarPlanillaUsuario() {
             <Typography variant="h6">Información Personal</Typography>
           </Grid>
           <Grid item xs={4}>
-            <Typography variant="h7">ID empleado: {id}</Typography>
+            <Typography variant="h7">ID Usuario: {id}</Typography>
           </Grid>
           <Grid item xs={4}>
             <Typography variant="h7">
-              Nombre empleado: {data.nombreEmpleado}
+              Nombre Usuario:{" "}
+              {selectedPlanilla
+                ? selectedPlanilla.nombreEmpleado
+                : "Sin información"}
             </Typography>
           </Grid>
           <Grid item xs={4}>
             <Typography variant="h7">
-              DUI empleado: {data.duiEmpleado}
+              DUI Usuario:{" "}
+              {selectedPlanilla
+                ? selectedPlanilla.duiEmpleado
+                : "Sin información"}
             </Typography>
           </Grid>
           <Grid item xs={5}>
             <Typography variant="h7">
-              Salario base: ${data.salarioBase}
+              Salario base: $
+              {selectedPlanilla ? selectedPlanilla.salarioBase.toFixed(2) : "0"}
             </Typography>
           </Grid>
           <Grid item xs={5}>
             <Typography variant="h7">
-              Salario diario: ${data.salarioDia}
+              Salario diario: $
+              {selectedPlanilla ? selectedPlanilla.salarioDia.toFixed(2) : "0"}
             </Typography>
           </Grid>
 
@@ -110,6 +148,24 @@ export default function VisualizarPlanillaUsuario() {
             <Typography variant="h6">
               Información de Pago - {mesLetras}
             </Typography>
+            <Grid container>
+              <Grid item xs={6}>
+                <Typography variant="h7">
+                  Fecha de inicio:{" "}
+                  {selectedPlanilla
+                    ? formatDate(selectedPlanilla.fechaInicio)
+                    : "Sin información"}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h7">
+                  Fecha de fin:{" "}
+                  {selectedPlanilla
+                    ? formatDate(selectedPlanilla.fechaFin)
+                    : "Sin información"}
+                </Typography>
+              </Grid>
+            </Grid>
             <Table size="small">
               <TableHead>
                 <TableRow>
@@ -134,38 +190,71 @@ export default function VisualizarPlanillaUsuario() {
                   <TableCell style={{ border: "none" }}>
                     Total horas extras diurnas
                   </TableCell>
-                  <TableCell style={{ border: "none" }}>{id}</TableCell>
+                  <TableCell style={{ border: "none" }}>
+                    $
+                    {selectedPlanilla
+                      ? selectedPlanilla.horasEDiurnas.toFixed(2)
+                      : "0"}
+                  </TableCell>
                   <TableCell style={{ border: "none" }}>
                     Descuento AFP
                   </TableCell>
-                  <TableCell style={{ border: "none" }}>{id}</TableCell>
+                  <TableCell style={{ border: "none" }}>
+                    ${" "}
+                    {selectedPlanilla
+                      ? selectedPlanilla.descuetoAfp.toFixed(2)
+                      : "0"}
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell style={{ border: "none" }}>
                     Total horas extras nocturnas
                   </TableCell>
-                  <TableCell style={{ border: "none" }}>{id}</TableCell>
+                  <TableCell style={{ border: "none" }}>
+                    ${" "}
+                    {selectedPlanilla
+                      ? selectedPlanilla.horasENocturnas.toFixed(2)
+                      : "0"}
+                  </TableCell>
                   <TableCell style={{ border: "none" }}>
                     Descuento ISSS
                   </TableCell>
-                  <TableCell style={{ border: "none" }}>{id}</TableCell>
+                  <TableCell style={{ border: "none" }}>
+                    ${" "}
+                    {selectedPlanilla
+                      ? selectedPlanilla.descuentoIsss.toFixed(2)
+                      : "0"}
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell style={{ border: "none" }}>
                     Total asueto trabajado
                   </TableCell>
-                  <TableCell style={{ border: "none" }}>{id}</TableCell>
+                  <TableCell style={{ border: "none" }}>
+                    ${" "}
+                    {selectedPlanilla
+                      ? selectedPlanilla.asuetos.toFixed(2)
+                      : "0"}
+                  </TableCell>
                   <TableCell style={{ border: "none" }}>
                     Descuento Renta
                   </TableCell>
-                  <TableCell style={{ border: "none" }}>{id}</TableCell>
+                  <TableCell style={{ border: "none" }}>
+                    ${" "}
+                    {selectedPlanilla
+                      ? selectedPlanilla.descuentoRenta.toFixed(2)
+                      : "0"}
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell style={{ border: "none" }}>
                     30% Vacaciones
                   </TableCell>
                   <TableCell colSpan={3} style={{ border: "none" }}>
-                    {id}
+                    ${" "}
+                    {selectedPlanilla
+                      ? selectedPlanilla.vacaciones.toFixed(2)
+                      : "0"}
                   </TableCell>{" "}
                   {/* Merged cell */}
                 </TableRow>
@@ -174,7 +263,10 @@ export default function VisualizarPlanillaUsuario() {
                     (-) Incapacidad
                   </TableCell>
                   <TableCell colSpan={3} style={{ border: "none" }}>
-                    {id}
+                    ${" "}
+                    {selectedPlanilla
+                      ? selectedPlanilla.incapacidades.toFixed(2)
+                      : "0"}
                   </TableCell>{" "}
                   {/* Merged cell */}
                 </TableRow>
@@ -183,7 +275,10 @@ export default function VisualizarPlanillaUsuario() {
                     (-) Ausencias
                   </TableCell>
                   <TableCell colSpan={3} style={{ border: "none" }}>
-                    {id}
+                    ${" "}
+                    {selectedPlanilla
+                      ? selectedPlanilla.diasAusentes.toFixed(2)
+                      : "0"}
                   </TableCell>{" "}
                   {/* Merged cell */}
                 </TableRow>
@@ -196,7 +291,10 @@ export default function VisualizarPlanillaUsuario() {
                   <TableCell
                     style={{ border: "none", borderTop: "1px solid #ccc" }}
                   >
-                    {id}
+                    ${" "}
+                    {selectedPlanilla
+                      ? selectedPlanilla.totalDevengado.toFixed(2)
+                      : "0"}
                   </TableCell>
                   <TableCell
                     style={{ border: "none", borderTop: "1px solid #ccc" }}
@@ -206,7 +304,10 @@ export default function VisualizarPlanillaUsuario() {
                   <TableCell
                     style={{ border: "none", borderTop: "1px solid #ccc" }}
                   >
-                    {id}
+                    ${" "}
+                    {selectedPlanilla
+                      ? selectedPlanilla.totalDescuentos.toFixed(2)
+                      : "0"}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -214,16 +315,46 @@ export default function VisualizarPlanillaUsuario() {
           </Grid>
           {/* Aquí se mostrará la información total de pago de la planilla */}
           <Grid item xs={12}>
-            <Typography variant="h7">Total devengado: $ {id}</Typography>
+            <Typography variant="h7">
+              Total devengado: ${" "}
+              {selectedPlanilla
+                ? selectedPlanilla.totalDevengado.toFixed(2)
+                : "0"}
+            </Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h7">Total descuentos: -$ {id}</Typography>
+            <Typography variant="h7">
+              Total descuentos: - ${" "}
+              {selectedPlanilla
+                ? selectedPlanilla.totalDescuentos.toFixed(2)
+                : "0"}
+            </Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h7">Líquido efectivo: $ {id}</Typography>
+            <Typography variant="h7">
+              Líquido efectivo: ${" "}
+              {selectedPlanilla
+                ? selectedPlanilla.liquidoPagar.toFixed(2)
+                : "0"}
+            </Typography>
           </Grid>
         </Grid>
       </div>
+
+      {/* Dialog for no planillas found */}
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>No hay planillas generadas</DialogTitle>
+        <DialogContent>
+          <Typography>
+            No hay planillas generadas para el mes {mesLetras}.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

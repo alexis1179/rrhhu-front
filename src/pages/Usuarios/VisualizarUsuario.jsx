@@ -4,8 +4,8 @@ import Loading from "../../Components/Loading";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { set } from "date-fns";
-import "../../Styles/VisualizarPlanillaUsuario.css";
-import "../../Styles/RegistrarUsuario.css";
+import "../../Styles/VisualizarUsuario.css";
+
 import {
   Button,
   Grid,
@@ -19,7 +19,6 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   InputAdornment,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -57,12 +56,15 @@ export default function VisualizarUsuario() {
   //fecha planilla
   const [fecha, setFecha] = React.useState(dayjs()); // Para obtener la fecha actual
   const [mes, setMes] = useState(fecha.month() + 1); // Guardamos el mes actual
+  const roleLogged = localStorage.getItem("rol");
   const [mesLetras, setMesLetras] = useState(fecha.locale("es").format("MMMM")); // Guardamos el mes actual en letras
   const [year, setYear] = useState(fecha.year().toString()); // Guardamos el año actual
   // validaciones
 
   const [phoneError, setPhoneError] = useState(false);
   const [salaryError, setSalaryError] = useState(false);
+  const [openDialogPlanilla, setOpenDialogPlanilla] = useState(false); 
+  const [planillaMessage, setPlanillaMessage] = useState(""); 
 
   // Estado para los valores originales
   const [valoresOriginales, setValoresOriginales] = useState({});
@@ -186,8 +188,12 @@ export default function VisualizarUsuario() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("DATA", data); // Log the fetched data
-      navigate(`/nomina/visualizarPlanillaUsuario/${id}`); // Use the id from useParams
+      console.log("Generar planilla", data);
+      setPlanillaMessage(
+              `Planilla ${mesLetras} generada correctamente para usuario ${nombre}`
+            );
+
+    setOpenDialogPlanilla(true); 
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -471,7 +477,13 @@ export default function VisualizarUsuario() {
                 {edit && !habilitarUsuario ? (
                   <Button
                     variant="contained"
-                    color="secondary"
+                    sx={{
+                      backgroundColor: "#004777", // Normal color
+                      color: "#FFFFFF", // Text color
+                      "&:hover": {
+                        backgroundColor: "#006BB8", // Hover color (with transparency)
+                      },
+                    }}
                     onClick={() => setOpenDialogEstado(true)}
                   >
                     Deshabilitar usuario
@@ -480,27 +492,70 @@ export default function VisualizarUsuario() {
                 {edit && habilitarUsuario ? (
                   <Button
                     variant="contained"
-                    color="secondary"
+                    sx={{
+                      backgroundColor: "#004777", // Normal color
+                      color: "#FFFFFF", // Text color
+                      "&:hover": {
+                        backgroundColor: "#006BB8", // Hover color (with transparency)
+                      },
+                    }}
                     onClick={() => setOpenDialogEstado(true)}
                   >
                     Habilitar usuario
                   </Button>
                 ) : null}
               </div>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => navigate(`/asistencia/historial/${id}`)}
-              >
-                Historial de Asistencia
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleGenerarPlanilla} // Call the function directly
-              >
-                Generar planilla de pago de {mesLetras}
-              </Button>
+              <div className="action-buttons">
+                {!edit && usuario && (
+                  <>
+                    {roleLogged === "ROLE_ADMIN" && (
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "#0D0221", // Normal color
+                          color: "#FFFFFF", // Text color
+                          "&:hover": {
+                            backgroundColor: "#250660", // Hover color (with transparency)
+                          },
+                        }}
+                        onClick={handleGenerarPlanilla}
+                      >
+                        Generar planilla de pago de {mesLetras}
+                      </Button>
+                    )}
+                    {roleLogged === "ROLE_RRHH" && (
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "#0D0221", // Normal color
+                          color: "#FFFFFF", // Text color
+                          "&:hover": {
+                            backgroundColor: "#250660", // Hover color (with transparency)
+                          },
+                        }}
+                        onClick={() =>
+                          navigate(`/nomina/visualizarPlanillaUsuario/${id}`)
+                        }
+                      >
+                        Visualizar planilla de pago
+                      </Button>
+                    )}
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#00767A", // Normal color
+                        color: "#FFFFFF", // Text color
+                        "&:hover": {
+                          backgroundColor: "#00AFB5", // Hover color (with transparency)
+                        },
+                      }}
+                      onClick={() => navigate(`/asistencia/historial/${id}`)}
+                    >
+                      Historial de Asistencia
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           )}
           <Dialog
@@ -632,6 +687,24 @@ export default function VisualizarUsuario() {
                 onClick={handleCambiarEstadoUsuario}
               >
                 Confirmar
+              </Button>
+            </DialogActions>
+          </Dialog>
+          
+          <Dialog
+            open={openDialogPlanilla}
+            onClose={() => setOpenDialogPlanilla(false)}
+          >
+            <DialogTitle>Crear planilla</DialogTitle>
+            <DialogContent>
+              <Typography variant="body1">{planillaMessage}</Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="contained"
+                onClick={() => setOpenDialogPlanilla(false)}
+              >
+                Aceptar
               </Button>
             </DialogActions>
           </Dialog>

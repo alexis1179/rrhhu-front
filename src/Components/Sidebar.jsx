@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography } from "@mui/material";
 import { Logout } from "@mui/icons-material";
@@ -8,16 +8,24 @@ import image from "../image/DSI logo 2.png";
 export default function Sidebar() {
   let navigate = useNavigate();
   let logged = localStorage.getItem("isLogged") === "true";
-  let rrhh = localStorage.getItem("rol") == "ROLE_RRHH";
-  let admin = localStorage.getItem("rol") == "ROLE_ADMIN";
-  let user = localStorage.getItem("rol") == "ROLE_USER";
-  let notEmpleado = localStorage.getItem("rol") != "ROLE_USER";
+  let rrhh = localStorage.getItem("rol") === "ROLE_RRHH";
+  let admin = localStorage.getItem("rol") === "ROLE_ADMIN";
+  let user = localStorage.getItem("rol") === "ROLE_USER";
+  let notEmpleado = localStorage.getItem("rol") !== "ROLE_USER";
   let usuario = localStorage.getItem("usuario");
-  let id = localStorage.getItem("UserId");
+  let id = localStorage.getItem("User Id");
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   const CerrarSesion = () => {
     localStorage.clear();
     navigate("/");
   };
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
   return (
     <>
       <div className="side-section">
@@ -49,9 +57,7 @@ export default function Sidebar() {
                 >
                   Usuarios
                 </Typography>
-              ) : (
-                <></>
-              )}
+              ) : null}
               <Typography
                 onClick={() => navigate("/asistencia/inicio")}
                 style={{ cursor: "pointer" }}
@@ -62,10 +68,36 @@ export default function Sidebar() {
                 onClick={() =>
                   navigate(`/nomina/visualizarPlanillaUsuario/${id}`)
                 }
+                style={{ cursor: "pointer" }}
               >
                 Nómina
               </Typography>
-              {admin ? <Typography>Reportes</Typography> : <></>}
+              {rrhh ? (
+                <div className="reportes">
+                  <Typography
+                    onClick={toggleDropdown}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Reportes
+                  </Typography>
+                  {dropdownOpen && (
+                    <div className="dropdown-content">
+                      <Typography
+                        onClick={() => navigate("/Dashboard")}
+                        style={{ cursor: "pointer" }}
+                      >
+                        Reporte 1
+                      </Typography>
+                      <Typography
+                        onClick={() => navigate("/Dashboard")}
+                        style={{ cursor: "pointer" }}
+                      >
+                        Reporte 2
+                      </Typography>
+                    </div>
+                  )}
+                </div>
+              ) : null}
             </div>
             <div className="user">
               {usuario ? (
@@ -76,9 +108,7 @@ export default function Sidebar() {
               <Logout className="logout" onClick={CerrarSesion} />
             </div>
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </div>
     </>
   );
