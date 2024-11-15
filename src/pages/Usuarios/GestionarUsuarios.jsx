@@ -32,7 +32,7 @@ export default function GestionarUsuarios() {
   useEffect(() => {
     obtenerUsuarios().then((respuesta) => {
       setUsuarios(respuesta);
-      setDataUsuarios(respuesta.map(({password, ...item}) => item));
+      setDataUsuarios(respuesta.map(({password, planillaEmpleado, cuenta_planillera, horasDiurnas, horasNocturnas, roles, solicitudesDiasLibres, incapacidadDiasUsuarios, asuetoTrabajadoDiasUsuarios, cargaLaboralDiurnaUsuarios, extrasDiurnas,	extrasNocturnas,	ausenciaDiaUsuarios,	vacacionesDiasUsuarios, salario_neto, ...item}) => item));
       setUsuariosActivos(respuesta.filter((usuario) => usuario.estado == "Activo"));
       setFilteredUsuarios(respuesta.filter((usuario) => usuario.estado == "Activo"));
     });
@@ -53,10 +53,50 @@ export default function GestionarUsuarios() {
 
   const exportToExcel = (data, filename) => {
     const workBook = XLSX.utils.book_new();
-    const workSheet = XLSX.utils.json_to_sheet(data);
+    
+  
+    // Define los títulos de las columnas
+    const headers = [
+      "ID",
+      "Nombre",
+      "Email",
+      "Teléfono",
+      "Dirección",
+      "Fecha de nacimiento",
+      "DUI",
+      "Cargo",
+      "Fecha de ingreso",
+      "Salario",
+      "Estado",
+      "Sexo"
+    ];
+
+    // Mapea los datos en un formato adecuado, asegurando que cada campo esté en orden
+    const formattedData = data.map((item) => [
+      item.id,
+      item.nombre,
+      item.email,
+      item.telefono,
+      item.direccion,
+      item.edad,
+      item.dui,
+      item.cargo,
+      item.fecha_ingreso,
+      item.salario,
+      item.estado,
+      item.sexo
+    ]);
+
+    // Combina los encabezados y los datos
+    const combinedData = [headers, ...formattedData];
+
+    // Crea la hoja de cálculo usando el formato combinado
+    const workSheet = XLSX.utils.aoa_to_sheet(combinedData);
     XLSX.utils.book_append_sheet(workBook, workSheet, "Usuarios");
+
+    // Escribe el archivo
     XLSX.writeFile(workBook, `${filename}.xlsx`);
-  }
+  };
 
   return (
     <>
