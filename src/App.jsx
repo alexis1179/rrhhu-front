@@ -15,7 +15,7 @@ import VisualizarUsuario from "./pages/Usuarios/VisualizarUsuario";
 import HistorialAsistencia from "./pages/Asistencia/HistorialAsistencia.jsx";
 import UsuarioInactivo from "./pages/Autenticacion/UsuarioInactivo";
 import VisualizarPlanillaUsuario from "./pages/Planilla/VisualizarPlanillaUsuario.jsx";
-
+import visualizarReporteAsistenciaGeneral from "./pages/Reportes/visualizarReporteAsistenciaGeneral";
 const App = () => {
   const [isLogged, setIsLogged] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -103,6 +103,10 @@ const App = () => {
               element={<ResponderSolicitudes />}
             />
             <Route path="/solicitudes" element={<GestionarSolicitudes />} />
+            <Route
+              path="/reportes/asistencia"
+              element={<visualizarReporteAsistenciaGeneral />}
+            />
           </Route>
         </Routes>
       )}

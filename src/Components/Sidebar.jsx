@@ -13,7 +13,7 @@ export default function Sidebar() {
   let user = localStorage.getItem("rol") === "ROLE_USER";
   let notEmpleado = localStorage.getItem("rol") !== "ROLE_USER";
   let usuario = localStorage.getItem("usuario");
-  let id = localStorage.getItem("User Id");
+  let id = localStorage.getItem("UserId");
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -83,10 +83,10 @@ export default function Sidebar() {
                   {dropdownOpen && (
                     <div className="dropdown-content">
                       <Typography
-                        onClick={() => navigate("/Dashboard")}
+                        onClick={() => navigate("/reportes/asistencia")}
                         style={{ cursor: "pointer" }}
                       >
-                        Reporte 1
+                        Reporte general de asistencia
                       </Typography>
                       <Typography
                         onClick={() => navigate("/Dashboard")}
