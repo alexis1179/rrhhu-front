@@ -194,7 +194,7 @@ const handleSave = async () => {
       <Sidebar />
       <div className="contenido">
         <div className="form">
-          <Typography variant="h4">Registrar Nuevo Empleado</Typography>
+          <Typography variant="h4">Registrar Nuevo Usuario</Typography>
           <Typography variant="h5">Información Personal</Typography>
           <Grid container spacing={2}>
             <Grid item xs={12}>

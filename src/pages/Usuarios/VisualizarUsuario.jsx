@@ -293,9 +293,9 @@ export default function VisualizarUsuario() {
           ) : (
             <div className="form">
               {edit ? (
-                <Typography variant="h4">Editar Empleado</Typography>
+                <Typography variant="h4">Editar Usuario</Typography>
               ) : (
-                <Typography variant="h4">Visualizar Empleado</Typography>
+                <Typography variant="h4">Visualizar Usuario</Typography>
               )}
               <Typography variant="h5">Información Personal</Typography>
               <Grid container spacing={2}>
@@ -560,7 +560,7 @@ export default function VisualizarUsuario() {
             open={openDialogModificar}
             onClose={() => setOpenDialogModificar(false)}
           >
-            <DialogTitle>actualizar usuario</DialogTitle>
+            <DialogTitle>Actualizar usuario</DialogTitle>
             <DialogContent>
               <Typography variant="body1">
                 Usuario actualizado con éxito
@@ -752,9 +752,9 @@ async function modificarUsuario(
 
     if (response.ok) {
       const result = await response.json();
-      console.log("Empleado actualizado:", result);
+      console.log("Usuario actualizado:", result);
     } else {
-      console.error("Error al actualizar el empleado:", response.statusText);
+      console.error("Error al actualizar el Usuario:", response.statusText);
     }
   } catch (error) {
     console.error("Error en la solicitud:", error);
