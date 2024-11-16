@@ -7,7 +7,8 @@ import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { set } from "date-fns";
 import "../../Styles/VisualizarPlanillaUsuario.css";
-
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import {
   Grid,
   Typography,
@@ -21,6 +22,7 @@ import {
   DialogContent,
   DialogTitle,
   Button,
+  Box,
 } from "@mui/material";
 
 export default function VisualizarPlanillaUsuario() {
@@ -76,6 +78,7 @@ export default function VisualizarPlanillaUsuario() {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+      setDialogOpen(true); // Open dialog on error
     }
   };
 
@@ -90,255 +93,322 @@ export default function VisualizarPlanillaUsuario() {
     const formatDate = (dateString) => {
       return dayjs(dateString).locale("es").format("DD/MMMM/YYYY");
     };
+    
+const exportToPDF = () => {
+  const input = document.getElementById("pdf-content");
+  html2canvas(input, { scale: 2 }).then((canvas) => {
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("l", "mm", "a4"); // Orientación horizontal
+    const imgWidth = 297; // A4 
+    const pageHeight = pdf.internal.pageSize.height; // A4 en mm
+    const imgHeight = (canvas.height * imgWidth) / canvas.width; // calcular la altura de la imagen
+    let heightLeft = imgHeight;
+
+    let position = 0;
+
+    // Calcular la posición de la imagen en la página
+    const xPosition = (pdf.internal.pageSize.width - imgWidth) / 2;
+    const yPosition = (pageHeight - imgHeight) / 2;
+
+    // Agregar la primera página
+    pdf.addImage(imgData, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    // Agregar las páginas restantes
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", xPosition, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    // Save the PDF
+    pdf.save("boleta_pago.pdf");
+  });
+};
   return (
     <>
       <Sidebar />
       <div className="content">
-        <div className="header-container">
+        <div className="header-container" style={{ margin: "50px 0 10px 0" }}>
           <PaymentsIcon fontSize="large" />
-          <Typography variant="h4" component="div" style={{ marginLeft: 0 }}>
+          <Typography variant="h3" component="div" style={{ marginLeft: 0 }}>
             Visualizar mi boleta de pago
           </Typography>
         </div>
-        <Grid container>
-          <Grid item xs={12}>
-            <Typography variant="h5" component="div" style={{ marginLeft: 8 }}>
-              Importaciones E y V
-            </Typography>
-          </Grid>
-
-          {/* Aquí se mostrará la información personal de la planilla */}
-          <Grid item xs={12}>
-            <Typography variant="h6">Información Personal</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="h7">ID Usuario: {id}</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="h7">
-              Nombre Usuario:{" "}
-              {selectedPlanilla
-                ? selectedPlanilla.nombreEmpleado
-                : "Sin información"}
-            </Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="h7">
-              DUI Usuario:{" "}
-              {selectedPlanilla
-                ? selectedPlanilla.duiEmpleado
-                : "Sin información"}
-            </Typography>
-          </Grid>
-          <Grid item xs={5}>
-            <Typography variant="h7">
-              Salario base: $
-              {selectedPlanilla ? selectedPlanilla.salarioBase.toFixed(2) : "0"}
-            </Typography>
-          </Grid>
-          <Grid item xs={5}>
-            <Typography variant="h7">
-              Salario diario: $
-              {selectedPlanilla ? selectedPlanilla.salarioDia.toFixed(2) : "0"}
-            </Typography>
-          </Grid>
-
-          {/* Aquí se mostrará la información de pago de la planilla */}
-          <Grid item xs={12}>
-            <Typography variant="h6">
-              Información de Pago - {mesLetras}
-            </Typography>
-            <Grid container>
-              <Grid item xs={6}>
-                <Typography variant="h7">
-                  Fecha de inicio:{" "}
-                  {selectedPlanilla
-                    ? formatDate(selectedPlanilla.fechaInicio)
-                    : "Sin información"}
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="h7">
-                  Fecha de fin:{" "}
-                  {selectedPlanilla
-                    ? formatDate(selectedPlanilla.fechaFin)
-                    : "Sin información"}
-                </Typography>
-              </Grid>
+        <div className="body-planilla" id="pdf-content">
+          <Grid container>
+            <Grid item xs={12}>
+              <Typography
+                variant="h4"
+                component="div"
+                style={{ margin: "10px 0 10px 0" }}
+              >
+                Importaciones E y V
+              </Typography>
             </Grid>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    align="center"
-                    colSpan={2}
-                    className="table-header-cell"
-                  >
-                    Devengado
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    colSpan={2}
-                    className="table-header-cell"
-                  >
-                    Descuentos
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell style={{ border: "none" }}>
-                    Total horas extras diurnas
-                  </TableCell>
-                  <TableCell style={{ border: "none" }}>
-                    $
-                    {selectedPlanilla
-                      ? selectedPlanilla.horasEDiurnas.toFixed(2)
-                      : "0"}
-                  </TableCell>
-                  <TableCell style={{ border: "none" }}>
-                    Descuento AFP
-                  </TableCell>
-                  <TableCell style={{ border: "none" }}>
-                    ${" "}
-                    {selectedPlanilla
-                      ? selectedPlanilla.descuetoAfp.toFixed(2)
-                      : "0"}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ border: "none" }}>
-                    Total horas extras nocturnas
-                  </TableCell>
-                  <TableCell style={{ border: "none" }}>
-                    ${" "}
-                    {selectedPlanilla
-                      ? selectedPlanilla.horasENocturnas.toFixed(2)
-                      : "0"}
-                  </TableCell>
-                  <TableCell style={{ border: "none" }}>
-                    Descuento ISSS
-                  </TableCell>
-                  <TableCell style={{ border: "none" }}>
-                    ${" "}
-                    {selectedPlanilla
-                      ? selectedPlanilla.descuentoIsss.toFixed(2)
-                      : "0"}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ border: "none" }}>
-                    Total asueto trabajado
-                  </TableCell>
-                  <TableCell style={{ border: "none" }}>
-                    ${" "}
-                    {selectedPlanilla
-                      ? selectedPlanilla.asuetos.toFixed(2)
-                      : "0"}
-                  </TableCell>
-                  <TableCell style={{ border: "none" }}>
-                    Descuento Renta
-                  </TableCell>
-                  <TableCell style={{ border: "none" }}>
-                    ${" "}
-                    {selectedPlanilla
-                      ? selectedPlanilla.descuentoRenta.toFixed(2)
-                      : "0"}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ border: "none" }}>
-                    30% Vacaciones
-                  </TableCell>
-                  <TableCell colSpan={3} style={{ border: "none" }}>
-                    ${" "}
-                    {selectedPlanilla
-                      ? selectedPlanilla.vacaciones.toFixed(2)
-                      : "0"}
-                  </TableCell>{" "}
-                  {/* Merged cell */}
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ border: "none" }}>
-                    (-) Incapacidad
-                  </TableCell>
-                  <TableCell colSpan={3} style={{ border: "none" }}>
-                    ${" "}
-                    {selectedPlanilla
-                      ? selectedPlanilla.incapacidades.toFixed(2)
-                      : "0"}
-                  </TableCell>{" "}
-                  {/* Merged cell */}
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ border: "none" }}>
-                    (-) Ausencias
-                  </TableCell>
-                  <TableCell colSpan={3} style={{ border: "none" }}>
-                    ${" "}
-                    {selectedPlanilla
-                      ? selectedPlanilla.diasAusentes.toFixed(2)
-                      : "0"}
-                  </TableCell>{" "}
-                  {/* Merged cell */}
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    style={{ border: "none", borderTop: "1px solid #ccc" }}
-                  >
-                    Total devengado
-                  </TableCell>
-                  <TableCell
-                    style={{ border: "none", borderTop: "1px solid #ccc" }}
-                  >
-                    ${" "}
-                    {selectedPlanilla
-                      ? selectedPlanilla.totalDevengado.toFixed(2)
-                      : "0"}
-                  </TableCell>
-                  <TableCell
-                    style={{ border: "none", borderTop: "1px solid #ccc" }}
-                  >
-                    Total descuentos
-                  </TableCell>
-                  <TableCell
-                    style={{ border: "none", borderTop: "1px solid #ccc" }}
-                  >
-                    ${" "}
-                    {selectedPlanilla
-                      ? selectedPlanilla.totalDescuentos.toFixed(2)
-                      : "0"}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+
+            {/* Aquí se mostrará la información personal de la planilla */}
+            <Grid item xs={12}>
+              <Typography variant="h5" sx={{ margin: "20px 0" }}>
+                Información Personal
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Box sx={{ margin: "20px 0" }}>
+                <Typography variant="h6">ID Usuario: {id}</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={4}>
+              <Box sx={{ margin: "20px 0" }}>
+                <Typography variant="h6">
+                  Nombre Usuario:{" "}
+                  {selectedPlanilla
+                    ? selectedPlanilla.nombreEmpleado
+                    : "Sin información"}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={4}>
+              <Box sx={{ margin: "20px 0" }}>
+                <Typography variant="h6">
+                  DUI Usuario:{" "}
+                  {selectedPlanilla
+                    ? selectedPlanilla.duiEmpleado
+                    : "Sin información"}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={5}>
+              <Box sx={{ margin: "20px 0" }}>
+                <Typography variant="h6">
+                  Salario base: $
+                  {selectedPlanilla
+                    ? selectedPlanilla.salarioBase.toFixed(2)
+                    : "0"}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={5}>
+              <Box sx={{ margin: "20px 0" }}>
+                <Typography variant="h6">
+                  Salario diario: $
+                  {selectedPlanilla
+                    ? selectedPlanilla.salarioDia.toFixed(2)
+                    : "0"}
+                </Typography>
+              </Box>
+            </Grid>
+
+            {/* Aquí se mostrará la información de pago de la planilla */}
+            <Grid item xs={12}>
+              <Typography variant="h5" sx={{ margin: "20px 0" }}>
+                Información de Pago - {mesLetras}
+              </Typography>
+              <Grid container>
+                <Grid item xs={6}>
+                  <Box sx={{ margin: "20px 0" }}>
+                    <Typography variant="h6">
+                      Fecha de inicio:{" "}
+                      {selectedPlanilla
+                        ? formatDate(selectedPlanilla.fechaInicio)
+                        : "Sin información"}
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={6}>
+                  <Box sx={{ margin: "20px 0" }}>
+                    <Typography variant="h6">
+                      Fecha de fin:{" "}
+                      {selectedPlanilla
+                        ? formatDate(selectedPlanilla.fechaFin)
+                        : "Sin información"}
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+              <Table className="tabla-planilla" size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      align="center"
+                      colSpan={2}
+                      className="table-header-cell"
+                    >
+                      Devengado
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      colSpan={2}
+                      className="table-header-cell"
+                    >
+                      Descuentos
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell style={{ border: "none" }}>
+                      Total horas extras diurnas
+                    </TableCell>
+                    <TableCell style={{ border: "none" }}>
+                      $
+                      {selectedPlanilla
+                        ? selectedPlanilla.horasEDiurnas.toFixed(2)
+                        : "0"}
+                    </TableCell>
+                    <TableCell style={{ border: "none" }}>
+                      Descuento AFP
+                    </TableCell>
+                    <TableCell style={{ border: "none" }}>
+                      ${" "}
+                      {selectedPlanilla
+                        ? selectedPlanilla.descuetoAfp.toFixed(2)
+                        : "0"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{ border: "none" }}>
+                      Total horas extras nocturnas
+                    </TableCell>
+                    <TableCell style={{ border: "none" }}>
+                      ${" "}
+                      {selectedPlanilla
+                        ? selectedPlanilla.horasENocturnas.toFixed(2)
+                        : "0"}
+                    </TableCell>
+                    <TableCell style={{ border: "none" }}>
+                      Descuento ISSS
+                    </TableCell>
+                    <TableCell style={{ border: "none" }}>
+                      ${" "}
+                      {selectedPlanilla
+                        ? selectedPlanilla.descuentoIsss.toFixed(2)
+                        : "0"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{ border: "none" }}>
+                      Total asueto trabajado
+                    </TableCell>
+                    <TableCell style={{ border: "none" }}>
+                      ${" "}
+                      {selectedPlanilla
+                        ? selectedPlanilla.asuetos.toFixed(2)
+                        : "0"}
+                    </TableCell>
+                    <TableCell style={{ border: "none" }}>
+                      Descuento Renta
+                    </TableCell>
+                    <TableCell style={{ border: "none" }}>
+                      ${" "}
+                      {selectedPlanilla
+                        ? selectedPlanilla.descuentoRenta.toFixed(2)
+                        : "0"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{ border: "none" }}>
+                      30% Vacaciones
+                    </TableCell>
+                    <TableCell colSpan={3} style={{ border: "none" }}>
+                      ${" "}
+                      {selectedPlanilla
+                        ? selectedPlanilla.vacaciones.toFixed(2)
+                        : "0"}
+                    </TableCell>{" "}
+                    {/* Merged cell */}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{ border: "none" }}>
+                      (-) Incapacidad
+                    </TableCell>
+                    <TableCell colSpan={3} style={{ border: "none" }}>
+                      ${" "}
+                      {selectedPlanilla
+                        ? selectedPlanilla.incapacidades.toFixed(2)
+                        : "0"}
+                    </TableCell>{" "}
+                    {/* Merged cell */}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{ border: "none" }}>
+                      (-) Ausencias
+                    </TableCell>
+                    <TableCell colSpan={3} style={{ border: "none" }}>
+                      ${" "}
+                      {selectedPlanilla
+                        ? selectedPlanilla.diasAusentes.toFixed(2)
+                        : "0"}
+                    </TableCell>{" "}
+                    {/* Merged cell */}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      style={{ border: "none", borderTop: "1px solid #ccc" }}
+                    >
+                      Total devengado
+                    </TableCell>
+                    <TableCell
+                      style={{ border: "none", borderTop: "1px solid #ccc" }}
+                    >
+                      ${" "}
+                      {selectedPlanilla
+                        ? selectedPlanilla.totalDevengado.toFixed(2)
+                        : "0"}
+                    </TableCell>
+                    <TableCell
+                      style={{ border: "none", borderTop: "1px solid #ccc" }}
+                    >
+                      Total descuentos
+                    </TableCell>
+                    <TableCell
+                      style={{ border: "none", borderTop: "1px solid #ccc" }}
+                    >
+                      ${" "}
+                      {selectedPlanilla
+                        ? selectedPlanilla.totalDescuentos.toFixed(2)
+                        : "0"}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </Grid>
+            {/* Aquí se mostrará la información total de pago de la planilla */}
+            <Grid item xs={12}>
+              <Typography variant="h6" style={{ margin: "10px 0 10px 0" }}>
+                Total devengado: ${" "}
+                {selectedPlanilla
+                  ? selectedPlanilla.totalDevengado.toFixed(2)
+                  : "0"}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6" style={{ margin: "10px 0 10px 0" }}>
+                Total descuentos: - ${" "}
+                {selectedPlanilla
+                  ? selectedPlanilla.totalDescuentos.toFixed(2)
+                  : "0"}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6" style={{ margin: "10px 0 10px 0" }}>
+                Líquido efectivo: ${" "}
+                {selectedPlanilla
+                  ? selectedPlanilla.liquidoPagar.toFixed(2)
+                  : "0"}
+              </Typography>
+            </Grid>
           </Grid>
-          {/* Aquí se mostrará la información total de pago de la planilla */}
-          <Grid item xs={12}>
-            <Typography variant="h7">
-              Total devengado: ${" "}
-              {selectedPlanilla
-                ? selectedPlanilla.totalDevengado.toFixed(2)
-                : "0"}
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h7">
-              Total descuentos: - ${" "}
-              {selectedPlanilla
-                ? selectedPlanilla.totalDescuentos.toFixed(2)
-                : "0"}
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h7">
-              Líquido efectivo: ${" "}
-              {selectedPlanilla
-                ? selectedPlanilla.liquidoPagar.toFixed(2)
-                : "0"}
-            </Typography>
-          </Grid>
-        </Grid>
+        </div>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={exportToPDF}
+          style={{ margin: "10px 0 10px 0" }}
+        >
+          Exportar a PDF
+        </Button>
       </div>
 
       {/* Dialog for no planillas found */}

@@ -388,19 +388,45 @@ export default function VisualizarUsuario() {
                       value={cargo}
                     >
                       <MenuItem value=""></MenuItem>
-                      <MenuItem value="Administrador de Sistemas IT">Administrador de Sistemas IT</MenuItem>
-                      <MenuItem value="Soporte Técnico">Soporte Técnico</MenuItem>
-                      <MenuItem value="Jefe de Recursos Humanos">Jefe de Recursos Humanos</MenuItem>
-                      <MenuItem value="Asistente de Recursos Humanos">Asistente de Recursos Humanos</MenuItem>
-                      <MenuItem value="Gerente General">Gerente General</MenuItem>
-                      <MenuItem value="Asistente Administrativo">Asistente Administrativo</MenuItem>
-                      <MenuItem value="Gerente de Ventas">Gerente de Ventas</MenuItem>
-                      <MenuItem value="Ejecutivo de Ventas">Ejecutivo de Ventas</MenuItem>
-                      <MenuItem value="Representante de Atención al Cliente">Representante de Atención al Cliente</MenuItem>
-                      <MenuItem value="Jefe de Logística">Jefe de Logística</MenuItem>
-                      <MenuItem value="Jefe de Taller Mecánico">Jefe de Taller Mecánico</MenuItem>
-                      <MenuItem value="Coordinador de Marketing">Coordinador de Marketing</MenuItem>
-                      <MenuItem value="Analista Financiero">Analista Financiero</MenuItem>
+                      <MenuItem value="Administrador de Sistemas IT">
+                        Administrador de Sistemas IT
+                      </MenuItem>
+                      <MenuItem value="Soporte Técnico">
+                        Soporte Técnico
+                      </MenuItem>
+                      <MenuItem value="Jefe de Recursos Humanos">
+                        Jefe de Recursos Humanos
+                      </MenuItem>
+                      <MenuItem value="Asistente de Recursos Humanos">
+                        Asistente de Recursos Humanos
+                      </MenuItem>
+                      <MenuItem value="Gerente General">
+                        Gerente General
+                      </MenuItem>
+                      <MenuItem value="Asistente Administrativo">
+                        Asistente Administrativo
+                      </MenuItem>
+                      <MenuItem value="Gerente de Ventas">
+                        Gerente de Ventas
+                      </MenuItem>
+                      <MenuItem value="Ejecutivo de Ventas">
+                        Ejecutivo de Ventas
+                      </MenuItem>
+                      <MenuItem value="Representante de Atención al Cliente">
+                        Representante de Atención al Cliente
+                      </MenuItem>
+                      <MenuItem value="Jefe de Logística">
+                        Jefe de Logística
+                      </MenuItem>
+                      <MenuItem value="Jefe de Taller Mecánico">
+                        Jefe de Taller Mecánico
+                      </MenuItem>
+                      <MenuItem value="Coordinador de Marketing">
+                        Coordinador de Marketing
+                      </MenuItem>
+                      <MenuItem value="Analista Financiero">
+                        Analista Financiero
+                      </MenuItem>
                       <MenuItem value="Contador">Contador</MenuItem>
                       <MenuItem value="Cajero">Cajero</MenuItem>
                     </Select>
@@ -522,7 +548,7 @@ export default function VisualizarUsuario() {
               <div className="action-buttons">
                 {!edit && usuario && (
                   <>
-                    {roleLogged === "ROLE_ADMIN" && (
+                    {roleLogged === "ROLE_ADMIN" && estado !== "Inactivo" && (
                       <Button
                         variant="contained"
                         sx={{
@@ -592,7 +618,10 @@ export default function VisualizarUsuario() {
               <Button
                 variant="contained"
                 //color="error"
-                onClick={() => setOpenDialogEstadoActualizado(false)}
+                onClick={() => {
+                  setOpenDialogEstadoActualizado(false);
+                  setEdit(false); // Resetear el estado de edición
+                }}
               >
                 Cerrar
               </Button>
@@ -704,7 +733,7 @@ export default function VisualizarUsuario() {
               </Button>
             </DialogActions>
           </Dialog>
-          
+
           <Dialog
             open={openDialogPlanilla}
             onClose={() => setOpenDialogPlanilla(false)}

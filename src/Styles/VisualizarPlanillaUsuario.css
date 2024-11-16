@@ -17,6 +17,19 @@
   text-align: center;                    /* Center align text */
 }
 
-.table-header-cell:last-child {
-  border-right: none;            /* Remove right border from the last cell */
+
+.table {
+  width: 100%; /* Ensure the table takes full width */
+  border-collapse: collapse; /* For better table appearance */
+}
+
+.table th, .table td {
+  padding: 8px; /* Adjust padding for better spacing */
+  text-align: left; /* Align text */
+  font-size: 12px; /* Adjust font size if necessary */
+}
+
+/* This will apply to all TableCell elements within a table with the class 'my-table' */
+.tabla-planilla .MuiTableCell-root {
+  font-size: 16px; /* Change this to your desired font size */
 }
