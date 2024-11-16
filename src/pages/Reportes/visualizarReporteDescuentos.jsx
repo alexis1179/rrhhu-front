@@ -56,7 +56,7 @@ const VisualizarReporteDescuentos = () => {
     const obtenerUsuarios = async () => {
         const idOcultos = [1, 2, 3];
         var usuarios;
-        console.log("obtener usuarios");
+        var usuariosFiltrados;
         try {
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -67,14 +67,43 @@ const VisualizarReporteDescuentos = () => {
             });
             usuarios = await response.json();
             setUsuario(usuarios.filter((usuario) => !idOcultos.includes(usuario.id)));
+            usuariosFiltrados = usuarios.filter((usuario) => !idOcultos.includes(usuario.id));
         } catch (error) {
             console.log(error);
         }
         
+        if(usuariosFiltrados.length === 0){
+            setData(false);
+            setLoading(false);
+            return;
+        }
+        const totalRenta = usuariosFiltrados.flatMap(usuario => usuario.planillaEmpleado||[])
+        .filter(planilla=> planilla.mes === mesLetras && planilla.anio === year)
+        .reduce((suma, planilla) => suma + (planilla.descuentoRenta||0), 0);
 
+        const totalIsss = usuariosFiltrados.flatMap(usuario => usuario.planillaEmpleado||[])
+        .filter(planilla=> planilla.mes === mesLetras && planilla.anio === year)
+        .reduce((suma, planilla) => suma + (planilla.descuentoIsss||0), 0);
+        
+        const totalAfp = usuariosFiltrados.flatMap(usuario => usuario.planillaEmpleado||[])
+        .filter(planilla=> planilla.mes === mesLetras && planilla.anio === year)
+        .reduce((suma, planilla) => suma + (planilla.descuetoAfp||0), 0);
+
+        if(totalRenta === 0 && totalIsss === 0 && totalAfp === 0){
+            setData(false);
+            setLoading(false);
+            return;
+        }
+        setData(true);
+        setResultado(true);
+        setRenta(totalRenta);
+        setIsss(totalIsss);
+        setAfp(totalAfp);
+        setLoading(false);
     }
 
     // Función para obtener las horas extra y trabajadas en asueto
+    /*
     const fetchHoras = async () => {
         let diurnasVal = 0;
         let nocturnasVal = 0;
@@ -165,23 +194,23 @@ const VisualizarReporteDescuentos = () => {
             setLoading(false);
             setResultado(false);
         }
-    };
+    };*/
 
     useEffect(() => {
-        console.log("useEffect");
-        setLoading(true);
+        //fetchHoras();
+        setLoading(true);        
+        setDisplayYear(year);        
+        console.log(mesLetras, year);
         obtenerUsuarios();
-        setDisplayYear(year);
-        fetchHoras();
     }, [mes, year]);
 
     // Configuración del gráfico de pastel
     const pieData = {
-        labels: ['Jornada Laboral', 'Extras Diurnas', 'Extras Nocturnas', 'Asueto'],
+        labels: ['Renta', 'ISSS', 'AFP'],
         datasets: [{
             label: 'Distribución Horas',
-            data: [extraData.diurnasNormales, extraData.diurnas, extraData.nocturnas, extraData.asueto],
-            backgroundColor: ['#36A2EB', '#FFCE56', '#66BB6A', '#FF6384'],
+            data: [renta, isss, afp],
+            backgroundColor: ['#36A2EB', '#FFCE56', '#66BB6A'],
             hoverOffset: 4
         }]
     };
@@ -246,23 +275,19 @@ const VisualizarReporteDescuentos = () => {
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <div style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}>
                                                 <div style={{ width: '25vw', margin: '10px' }}>
-                                                    <h2>Horas Diurnas</h2>
-                                                    <p>{extraData.diurnas} horas</p>
+                                                    <h2>Renta</h2>
+                                                    <p>${renta}</p>
                                                 </div>
                                                 <div style={{ width: '50%', margin: '10px' }}>
-                                                    <h2>Horas Nocturnas</h2>
-                                                    <p>{extraData.nocturnas} horas</p>
+                                                    <h2>ISSS</h2>
+                                                    <p>${isss}</p>
                                                 </div>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}>
                                                 <div style={{ width: '50%', margin: '10px' }}>
-                                                    <h2>Horas en asueto</h2>
-                                                    <p>{extraData.asueto} horas</p>
-                                                </div>
-                                                <div style={{ width: '50%', margin: '10px' }}>
-                                                    <h2>Horas Diurnas Normales</h2>
-                                                    <p>{extraData.diurnasNormales} horas</p>
-                                                </div>
+                                                    <h2>AFP</h2>
+                                                    <p>${afp}</p>
+                                                </div>                                                
                                             </div>
                                         </div>
                                     </div>

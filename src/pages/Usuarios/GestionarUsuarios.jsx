@@ -34,11 +34,11 @@ export default function GestionarUsuarios() {
     const idOcultos = [1, 2, 3];
     obtenerUsuarios().then((respuesta) => {
       setUsuarios(respuesta.filter((usuario) => !idOcultos.includes(usuario.id)));
-      setDataUsuarios(respuesta.filter((usuario) => !idOcultos.includes(usuario.id)).map(({password, planillaEmpleado, cuenta_planillera, horasDiurnas, horasNocturnas, roles, solicitudesDiasLibres, incapacidadDiasUsuarios, asuetoTrabajadoDiasUsuarios, cargaLaboralDiurnaUsuarios, extrasDiurnas,	extrasNocturnas,	ausenciaDiaUsuarios,	vacacionesDiasUsuarios, salario_neto, ...item}) => item));
+      setDataUsuarios(respuesta.filter((usuario) => !idOcultos.includes(usuario.id)).map(({ password, planillaEmpleado, cuenta_planillera, horasDiurnas, horasNocturnas, roles, solicitudesDiasLibres, incapacidadDiasUsuarios, asuetoTrabajadoDiasUsuarios, cargaLaboralDiurnaUsuarios, extrasDiurnas, extrasNocturnas, ausenciaDiaUsuarios, vacacionesDiasUsuarios, salario_neto, ...item }) => item));
       setUsuariosActivos(respuesta.filter((usuario) => usuario.estado == "Activo" && !idOcultos.includes(usuario.id)));
       setFilteredUsuarios(respuesta.filter((usuario) => (usuario.estado == "Activo" && !idOcultos.includes(usuario.id))));
-    });
-  }, []);
+    });
+  }, []);
 
   const handleSearch = (event) => {
     const searchText = event.target.value.toLowerCase();
@@ -55,8 +55,8 @@ export default function GestionarUsuarios() {
 
   const exportToExcel = (data, filename) => {
     const workBook = XLSX.utils.book_new();
-    
-  
+
+
     // Define los títulos de las columnas
     const headers = [
       "ID",
