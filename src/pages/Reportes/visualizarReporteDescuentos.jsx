@@ -71,135 +71,48 @@ const VisualizarReporteDescuentos = () => {
         } catch (error) {
             console.log(error);
         }
-        
-        if(usuariosFiltrados.length === 0){
+
+        if (usuariosFiltrados.length === 0) {
             setData(false);
             setLoading(false);
             return;
         }
-        const totalRenta = usuariosFiltrados.flatMap(usuario => usuario.planillaEmpleado||[])
-        .filter(planilla=> planilla.mes === mesLetras && planilla.anio === year)
-        .reduce((suma, planilla) => suma + (planilla.descuentoRenta||0), 0);
+        const totalRenta = usuariosFiltrados.flatMap(usuario => usuario.planillaEmpleado || [])
+            .filter(planilla => planilla.mes === mesLetras && planilla.anio === year)
+            .reduce((suma, planilla) => suma + (planilla.descuentoRenta || 0), 0);
 
-        const totalIsss = usuariosFiltrados.flatMap(usuario => usuario.planillaEmpleado||[])
-        .filter(planilla=> planilla.mes === mesLetras && planilla.anio === year)
-        .reduce((suma, planilla) => suma + (planilla.descuentoIsss||0), 0);
-        
-        const totalAfp = usuariosFiltrados.flatMap(usuario => usuario.planillaEmpleado||[])
-        .filter(planilla=> planilla.mes === mesLetras && planilla.anio === year)
-        .reduce((suma, planilla) => suma + (planilla.descuetoAfp||0), 0);
+        const totalIsss = usuariosFiltrados.flatMap(usuario => usuario.planillaEmpleado || [])
+            .filter(planilla => planilla.mes === mesLetras && planilla.anio === year)
+            .reduce((suma, planilla) => suma + (planilla.descuentoIsss || 0), 0);
 
-        if(totalRenta === 0 && totalIsss === 0 && totalAfp === 0){
+        const totalAfp = usuariosFiltrados.flatMap(usuario => usuario.planillaEmpleado || [])
+            .filter(planilla => planilla.mes === mesLetras && planilla.anio === year)
+            .reduce((suma, planilla) => suma + (planilla.descuetoAfp || 0), 0);
+
+        const aniosUnicos = Array.from(
+            new Set(
+                usuarios.flatMap(usuario => usuario.planillaEmpleado || [])
+                    .map(planilla => planilla.anio)
+            )
+        ).sort();
+        setAnios(aniosUnicos);
+
+        if (totalRenta === 0 && totalIsss === 0 && totalAfp === 0) {
             setData(false);
             setLoading(false);
             return;
         }
         setData(true);
         setResultado(true);
-        setRenta(totalRenta);
-        setIsss(totalIsss);
-        setAfp(totalAfp);
+        setRenta(parseFloat(totalRenta.toFixed(2)));
+        setIsss(parseFloat(totalIsss.toFixed(2)));
+        setAfp(parseFloat(totalAfp.toFixed(2)));
         setLoading(false);
     }
 
-    // Función para obtener las horas extra y trabajadas en asueto
-    /*
-    const fetchHoras = async () => {
-        let diurnasVal = 0;
-        let nocturnasVal = 0;
-        let asuetoVal = 0;
-        let diurnasNormalesVal = 0;
-        let diurnas = [];
-        let nocturnas = [];
-        let asueto = [];
-        let diurnasNormales = [];
-
-        const token = localStorage.getItem("token");
-        const headers = {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        };
-        try {
-
-            try {
-                const resDiurnas = await fetch(`${url}/extras-diurnas/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
-                diurnas = await resDiurnas.json();
-                diurnasVal = diurnas.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
-                if (diurnas.length > 0) {
-                    setExtraData(prevData => ({
-                        ...prevData,
-                        diurnas: parseFloat(diurnasVal.toFixed(1))
-                    }));
-                }
-            } catch (error) {
-            }
-
-            try {
-                const resNocturnas = await fetch(`${url}/extras-nocturnas/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
-                nocturnas = await resNocturnas.json();
-                nocturnasVal = nocturnas.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
-                if (nocturnas.length > 0) {
-                    setExtraData(prevData => ({
-                        ...prevData,
-                        nocturnas: parseFloat(nocturnasVal.toFixed(1))
-                    }));
-                }
-            } catch (error) {
-            }
-
-            try {
-                const resAsueto = await fetch(`${url}/asuetos-trabajados/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
-                asueto = await resAsueto.json();
-                asuetoVal = asueto.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
-                if (asueto.length > 0) {
-                    setExtraData(prevData => ({
-                        ...prevData,
-                        asueto: parseFloat(asuetoVal.toFixed(1))
-                    }));
-                }
-            } catch (error) {
-            }
-
-            try {
-                const resDiurnasNormales = await fetch(`${url}/carga-laboral-diurna/consultar/usuario/${userId}?mes=${mes}&año=${year}`, { headers });
-                diurnasNormales = await resDiurnasNormales.json();
-                diurnasNormalesVal = diurnasNormales.find(registro => registro.mes === mesLetras && registro.año === year)?.cantidad_horas || 0;
-                if (diurnasNormales.length > 0) {
-                    setExtraData(prevData => ({
-                        ...prevData,
-                        diurnasNormales: parseFloat(diurnasNormalesVal.toFixed(1))
-                    }));
-                }
-            } catch (error) {
-            }
-            const anio = (diurnas.map(registro => registro.año) + "," + nocturnas.map(registro => registro.año) + "," + asueto.map(registro => registro.año) + "," + diurnasNormales.map(registro => registro.año));
-            const anioUnico = [...new Set(anio.split(","))].sort();
-            setAnios(anioUnico);
-            if (diurnasVal === 0 && nocturnasVal === 0 && asuetoVal === 0 && diurnasNormalesVal === 0) {
-                setData(false);
-            } else {
-                setData(true);
-            }
-            setLoading(false);
-
-            if (diurnas.length === 0 && nocturnas.length === 0 && asueto.length === 0 && diurnasNormales.length === 0) {
-                setResultado(false);
-            } else {
-                setResultado(true);
-            }
-
-        } catch (error) {
-            console.error("Error al obtener datos:", error);
-            setData(false);
-            setLoading(false);
-            setResultado(false);
-        }
-    };*/
-
     useEffect(() => {
-        //fetchHoras();
-        setLoading(true);        
-        setDisplayYear(year);        
+        setLoading(true);
+        setDisplayYear(year);
         console.log(mesLetras, year);
         obtenerUsuarios();
     }, [mes, year]);
@@ -287,7 +200,7 @@ const VisualizarReporteDescuentos = () => {
                                                 <div style={{ width: '50%', margin: '10px' }}>
                                                     <h2>AFP</h2>
                                                     <p>${afp}</p>
-                                                </div>                                                
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
