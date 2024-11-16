@@ -132,6 +132,16 @@ export default function ResponderSolicitudes() {
         fecha.format("YYYY")
       );
     }
+
+    if (horasAusentes>0) {
+      registrarHorasAusente(
+        horasAusentes,
+        fecha.locale("es").format("MMMM"),
+        fecha.format("YYYY")
+      );
+
+    }
+
     setGuardarExitoso(true);
     handleCerrarGuardar();
     limpiarCampos();
@@ -510,6 +520,25 @@ async function registrarHorasExtrasNocturnas(extrasNocturnas, mes, year) {
   };
 
   const response = await fetch(url + "/extras-nocturnas/crear/" + userId, {
+    method: "POST",
+    headers: myHeaders,
+    body: JSON.stringify(data),
+  });
+  return response;
+}
+
+async function registrarHorasAusente(extrasNocturnas, mes, year) {
+  const userId = localStorage.getItem("UserId");
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", "Bearer " + localStorage.getItem("token"));
+  const data = {
+    cantidad_horas: extrasNocturnas,
+    mes: mes,
+    año: year,
+  };
+
+  const response = await fetch(url + "/ausencia-dias-usuario/crear/" + userId, {
     method: "POST",
     headers: myHeaders,
     body: JSON.stringify(data),
