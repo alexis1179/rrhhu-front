@@ -29,14 +29,28 @@ export default function VisualizarPlanillaUsuario() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [data, setData] = React.useState([]);
-    const [selectedPlanilla, setSelectedPlanilla] = useState(null);
-    const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedPlanilla, setSelectedPlanilla] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [fecha, setFecha] = React.useState(dayjs()); // Para obtener la fecha actual
   const [mes, setMes] = useState(fecha.month() + 1); // Guardamos el mes actual
   const [mesLetras, setMesLetras] = useState(fecha.locale("es").format("MMMM")); // Guardamos el mes actual en letras
   const [year, setYear] = useState(fecha.year().toString()); // Guardamos el año actual
-  const [anios, setAnios] = useState([]);
-  const [displayYear, setDisplayYear] = useState(year);
+
+  //para setear el año y mes nuevo
+  const [uniqueMonths, setUniqueMonths] = useState([]);
+  const [uniqueYears, setUniqueYears] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(mesLetras); // Default to current month
+  console.log("Mes", selectedMonth);
+  const [selectedYear, setSelectedYear] = useState(year); // Default to current year
+
+  //Manejo de los dropwdowns
+  const handleMonthChange = (event) => {
+    setSelectedMonth(event.target.value);
+  };
+
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value);
+  };
 
   const fetchData = async () => {
     const apiUrl = `${url}/planillas/${id}`;
@@ -56,78 +70,96 @@ export default function VisualizarPlanillaUsuario() {
       }
       const data = await response.json();
       setData(data);
-      console.log("Planillas", data); // Revisar las planillas del usuario
+      console.log("Planillas", data);
 
-      // Filter the data for matches based on mes and anio
-      const filteredData = data.filter(
-        (item) => item.mes === mesLetras && item.anio === year
-      );
+      // Extract unique months and years
+      const months = [...new Set(data.map((item) => item.mes))];
+      const years = [...new Set(data.map((item) => item.anio))];
 
-      // Check for matches
-      if (filteredData.length === 0) {
-        // No matches found
-        setDialogOpen(true);
-      } else {
-        // Select the item with the highest ID
-        const highestIdItem = filteredData.reduce((prev, current) => {
-          return prev.id > current.id ? prev : current;
-        });
-        setSelectedPlanilla(highestIdItem);
-        console.log("HighestIdItem ", highestIdItem);
-        console.log("Selected planilla ", selectedPlanilla);
-      }
+      setUniqueMonths(months);
+      setUniqueYears(years);
+
+      // Set default selections to the first available month and year
+      if (months.length > 0) setSelectedMonth(months[0]);
+      if (years.length > 0) setSelectedYear(years[0]);
+
+      // Automatically select the planilla for the current month and year
+      updateSelectedPlanilla(months[0], years[0], data);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setDialogOpen(true); // Open dialog on error
+      setDialogOpen(true);
+    }
+  };
+
+  const updateSelectedPlanilla = (month, year, data) => {
+    const filteredData = data.filter(
+      (item) => item.mes === month && item.anio === year
+    );
+
+    if (filteredData.length === 0) {
+      setDialogOpen(true);
+    } else {
+      const highestIdItem = filteredData.reduce((prev, current) => {
+        return prev.id > current.id ? prev : current;
+      });
+      setSelectedPlanilla(highestIdItem);
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, [id, mes, year]); // Add dependencies to ensure fetch is called when these change
+  }, [id]); 
+
+  useEffect(() => {
+    if (data.length > 0) {
+      updateSelectedPlanilla(selectedMonth, selectedYear, data);
+    }
+  }, [selectedMonth, selectedYear, data]);
 
   const handleDialogClose = () => {
     setDialogOpen(false);
-    navigate("/dashboard"); // Navigate back to the dashboard
+    navigate("/dashboard"); // Regresamos al inicio
   };
-    const formatDate = (dateString) => {
-      return dayjs(dateString).locale("es").format("DD/MMMM/YYYY");
-    };
-    
-const exportToPDF = () => {
-  const input = document.getElementById("pdf-content");
-  html2canvas(input, { scale: 2 }).then((canvas) => {
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("l", "mm", "a4"); // Orientación horizontal
-    const imgWidth = 297; // A4 
-    const pageHeight = pdf.internal.pageSize.height; // A4 en mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width; // calcular la altura de la imagen
-    let heightLeft = imgHeight;
+  const formatDate = (dateString) => {
+    return dayjs(dateString).locale("es").format("DD/MMMM/YYYY");
+  };
 
-    let position = 0;
+  const exportToPDF = () => {
+    const input = document.getElementById("pdf-content");
+    html2canvas(input, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("l", "mm", "a4"); // Orientación horizontal
+      const imgWidth = 297; // A4
+      const pageHeight = pdf.internal.pageSize.height; // A4 en mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width; // calcular la altura de la imagen
+      let heightLeft = imgHeight;
 
-    // Calcular la posición de la imagen en la página
-    const xPosition = (pdf.internal.pageSize.width - imgWidth) / 2;
-    const yPosition = (pageHeight - imgHeight) / 2;
+      let position = 0;
 
-    // Agregar la primera página
-    pdf.addImage(imgData, "PNG", xPosition, yPosition, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+      // Calcular la posición de la imagen en la página
+      const xPosition = (pdf.internal.pageSize.width - imgWidth) / 2;
+      const yPosition = (pageHeight - imgHeight) / 2;
 
-    // Agregar las páginas restantes
-    while (heightLeft >= 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, "PNG", xPosition, position, imgWidth, imgHeight);
+      // Agregar la primera página
+      pdf.addImage(imgData, "PNG", xPosition, yPosition, imgWidth, imgHeight);
       heightLeft -= pageHeight;
-    }
 
-    // Save the PDF
-    //const dui = selectedPlanilla ? selectedPlanilla.duiEmpleado : "";
-    const nombreEmpleado = selectedPlanilla ? selectedPlanilla.nombreEmpleado : "";
-    pdf.save(`boleta_pago_${nombreEmpleado}_${mesLetras}_${year}.pdf`);
-  });
-};
+      // Agregar las páginas restantes
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", xPosition, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+
+      //const dui = selectedPlanilla ? selectedPlanilla.duiEmpleado : "";
+      const nombreEmpleado = selectedPlanilla
+        ? selectedPlanilla.nombreEmpleado
+        : "";
+      pdf.save(`boleta_pago_${nombreEmpleado}_${mesLetras}_${year}.pdf`);
+    });
+  };
   return (
     <>
       <Sidebar />
@@ -138,6 +170,31 @@ const exportToPDF = () => {
             Visualizar mi boleta de pago
           </Typography>
         </div>
+        <Grid item xs={12}>
+          <Typography variant="h5" sx={{ margin: "20px 0" }}>
+            Seleccionar Mes y Año
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <select value={selectedMonth} onChange={handleMonthChange}>
+                {uniqueMonths.map((month, index) => (
+                  <option key={index} value={month}>
+                    {month}
+                  </option>
+                ))}
+              </select>
+            </Grid>
+            <Grid item xs={6}>
+              <select value={selectedYear} onChange={handleYearChange}>
+                {uniqueYears.map((year, index) => (
+                  <option key={index} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </Grid>
+          </Grid>
+        </Grid>
         <div className="body-planilla" id="pdf-content">
           <Grid container>
             <Grid item xs={12}>
