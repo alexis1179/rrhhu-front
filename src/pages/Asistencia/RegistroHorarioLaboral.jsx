@@ -69,11 +69,14 @@ export default function ResponderSolicitudes() {
   const handleChangeAsuetos = (event) => {
     setAsuetosTrabajados(event.target.value);
   };
-  const handleChangeCargaLarboralDiurna = (event) => {
-    setCargaLaboralDiurna(event.target.value);
-    const horasRestantesValue = parseFloat(7.9 - cargaLaboralDiurna);
-    setHorasAusentes(horasRestantesValue);
-  };
+const handleChangeCargaLarboralDiurna = (event) => {
+  const newCargaLaboralDiurna = parseFloat(event.target.value);
+  setCargaLaboralDiurna(newCargaLaboralDiurna);
+
+  // Calculate horas ausentes using the new value directly
+  const horasRestantesValue = parseFloat(8.0 - newCargaLaboralDiurna);
+  setHorasAusentes(horasRestantesValue);
+};
   const handleIncapacidad = (event) => {
     setDiasIncapacidad(event.target.value);
   };

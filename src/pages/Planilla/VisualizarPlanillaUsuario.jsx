@@ -238,7 +238,17 @@ export default function VisualizarPlanillaUsuario() {
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={4}>
+              <Box sx={{ margin: "20px 0" }}>
+                <Typography variant="h6">
+                  Cargo:  {" "}
+                  {selectedPlanilla
+                    ? selectedPlanilla.cargoEmpleado
+                    : "0"}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={4}>
               <Box sx={{ margin: "20px 0" }}>
                 <Typography variant="h6">
                   Salario base: $
@@ -248,7 +258,7 @@ export default function VisualizarPlanillaUsuario() {
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={4}>
               <Box sx={{ margin: "20px 0" }}>
                 <Typography variant="h6">
                   Salario diario: $
