@@ -113,12 +113,18 @@ export default function RegistrarUsuario() {
     const cargo = event.target.value;
     let rolValue;
     switch (cargo) {
-      case "RRHH":
+      case "Jefe de Recursos Humanos":
         rolValue = "RRHH";
         break;
-      case "Administrador":
+      case "Asistente de Recursos Humanos":
+        rolValue = "RRHH";
+        break;
+      case "Administrador de Sistemas IT":
         rolValue = "ADMIN";
         break;
+      case "Soporte Técnico":
+        rolValue = "ADMIN";
+        break;  
       default:
         rolValue = "USER";
         break;
@@ -326,13 +332,21 @@ const handleSave = async () => {
                   defaultValue={""}
                 >
                   <MenuItem value=""></MenuItem>
-                  <MenuItem value="RRHH">Personal de RRHH</MenuItem>
-                  <MenuItem value="Administrador">Administrador</MenuItem>
-                  <MenuItem value="Vendedor">Vendedor</MenuItem>
-                  <MenuItem value="Gerente">Gerente</MenuItem>
-                  <MenuItem value="Cajero">Cajero</MenuItem>
+                  <MenuItem value="Administrador de Sistemas IT">Administrador de Sistemas IT</MenuItem>
+                  <MenuItem value="Soporte Técnico">Soporte Técnico</MenuItem>
+                  <MenuItem value="Jefe de Recursos Humanos">Jefe de Recursos Humanos</MenuItem>
+                  <MenuItem value="Asistente de Recursos Humanos">Asistente de Recursos Humanos</MenuItem>
+                  <MenuItem value="Gerente General">Gerente General</MenuItem>
+                  <MenuItem value="Asistente Administrativo">Asistente Administrativo</MenuItem>
+                  <MenuItem value="Gerente de Ventas">Gerente de Ventas</MenuItem>
+                  <MenuItem value="Ejecutivo de Ventas">Ejecutivo de Ventas</MenuItem>
+                  <MenuItem value="Representante de Atención al Cliente">Representante de Atención al Cliente</MenuItem>
+                  <MenuItem value="Jefe de Logística">Jefe de Logística</MenuItem>
+                  <MenuItem value="Jefe de Taller Mecánico">Jefe de Taller Mecánico</MenuItem>
+                  <MenuItem value="Coordinador de Marketing">Coordinador de Marketing</MenuItem>
+                  <MenuItem value="Analista Financiero">Analista Financiero</MenuItem>
                   <MenuItem value="Contador">Contador</MenuItem>
-                  <MenuItem value="IT">IT</MenuItem>
+                  <MenuItem value="Cajero">Cajero</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
