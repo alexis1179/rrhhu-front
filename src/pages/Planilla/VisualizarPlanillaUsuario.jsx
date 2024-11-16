@@ -123,7 +123,9 @@ const exportToPDF = () => {
     }
 
     // Save the PDF
-    pdf.save("boleta_pago.pdf");
+    //const dui = selectedPlanilla ? selectedPlanilla.duiEmpleado : "";
+    const nombreEmpleado = selectedPlanilla ? selectedPlanilla.nombreEmpleado : "";
+    pdf.save(`boleta_pago_${nombreEmpleado}_${mesLetras}_${year}.pdf`);
   });
 };
   return (
