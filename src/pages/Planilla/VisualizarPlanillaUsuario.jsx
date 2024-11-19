@@ -241,10 +241,8 @@ export default function VisualizarPlanillaUsuario() {
             <Grid item xs={4}>
               <Box sx={{ margin: "20px 0" }}>
                 <Typography variant="h6">
-                  Cargo:  {" "}
-                  {selectedPlanilla
-                    ? selectedPlanilla.cargoEmpleado
-                    : "0"}
+                  Cargo:{" "}
+                  {selectedPlanilla ? selectedPlanilla.cargoEmpleado : "0"}
                 </Typography>
               </Box>
             </Grid>
@@ -407,7 +405,7 @@ export default function VisualizarPlanillaUsuario() {
                     <TableCell colSpan={3} style={{ border: "none" }}>
                       ${" "}
                       {selectedPlanilla
-                        ? selectedPlanilla.diasAusentes.toFixed(2)
+                        ? selectedPlanilla.horasAusentes.toFixed(2)
                         : "0"}
                     </TableCell>{" "}
                     {/* Merged cell */}
