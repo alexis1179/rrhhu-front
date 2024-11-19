@@ -50,6 +50,7 @@ const Report = () => {
     const [nombreEmpleado, setNombreEmpleado] = useState(""); // Nuevo estado para el nombre del empleado
 
     const userRole = localStorage.getItem("rol");
+    const rol = userRole === "ROLE_RRHH";
     const user = localStorage.getItem("UserId");  // Obtenemos el ID del usuario logueado
     const { id } = useParams();
     if (id != null) {
