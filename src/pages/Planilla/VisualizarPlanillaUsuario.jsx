@@ -72,18 +72,18 @@ export default function VisualizarPlanillaUsuario() {
       setData(data);
       console.log("Planillas", data);
 
-      // Extract unique months and years
+      // Obtener meses y años que tenga planillas
       const months = [...new Set(data.map((item) => item.mes))];
       const years = [...new Set(data.map((item) => item.anio))];
 
       setUniqueMonths(months);
       setUniqueYears(years);
 
-      // Set default selections to the first available month and year
+      // Set mes y año por defecto
       if (months.length > 0) setSelectedMonth(months[0]);
       if (years.length > 0) setSelectedYear(years[0]);
 
-      // Automatically select the planilla for the current month and year
+      // Seleccionar la planilla con el mes y año por defecto
       updateSelectedPlanilla(months[0], years[0], data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -480,7 +480,7 @@ export default function VisualizarPlanillaUsuario() {
         </Button>
       </div>
 
-      {/* Dialog for no planillas found */}
+      {/* No hay planillas */}
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>No hay planillas generadas</DialogTitle>
         <DialogContent>

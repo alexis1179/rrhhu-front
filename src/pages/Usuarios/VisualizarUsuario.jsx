@@ -172,7 +172,7 @@ export default function VisualizarUsuario() {
 
   const handleGenerarPlanilla = async () => {
     const apiUrl = `${url}/planilla/crear/${id}/mes/${mesLetras}/anio/${year}`;
-    console.log("Fetching data from:", apiUrl); // Log the URL
+    console.log("Fetching data from:", apiUrl); 
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append(
