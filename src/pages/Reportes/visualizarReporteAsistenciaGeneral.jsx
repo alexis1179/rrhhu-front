@@ -200,6 +200,9 @@ const fetchHoras = async () => {
       )} ${displayYear}`;
       pdf.setFontSize(20);
 
+      //Poner letra en negrita
+      pdf.setFont("helvetica", "bold");
+
       // Obtener el ancho del texto
       const pageWidth = pdf.internal.pageSize.getWidth();
       const textWidth = pdf.getTextWidth(titleText);
@@ -209,6 +212,9 @@ const fetchHoras = async () => {
 
       // Agregar el título centrado
       pdf.text(titleText, xPositionTitle, 20); // '20' es la posición vertical del título
+
+      // Poner letra en normal
+      pdf.setFont("helvetica", "normal");
 
       // Convertir el gráfico a imagen
       const pieChartElement = document.getElementById("pie-chart");
@@ -353,7 +359,7 @@ const fetchHoras = async () => {
               margin: "10px 0",
             }}
           >
-            <Button variant="contained" color="primary" onClick={generatePDF}>
+            <Button variant="contained" color="primary" onClick={generatePDF} style={{ margin: '20px' }}>
               Exportar a PDF
             </Button>
           </div>

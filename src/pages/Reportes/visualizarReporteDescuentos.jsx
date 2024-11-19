@@ -176,6 +176,9 @@ const VisualizarReporteDescuentos = () => {
         )} ${displayYear}`;
         pdf.setFontSize(20);
 
+        //Poner letra en negrita
+        pdf.setFont("helvetica", "bold");
+
         // Obtener el ancho del texto
         const pageWidth = pdf.internal.pageSize.getWidth();
         const textWidth = pdf.getTextWidth(titleText);
@@ -185,6 +188,9 @@ const VisualizarReporteDescuentos = () => {
 
         // Agregar el título centrado
         pdf.text(titleText, xPosition, 20); // '20' es la posición vertical del título
+
+        // Poner letra en normal
+        pdf.setFont("helvetica", "normal");
     
         // Convertir gráfico a imagen y agregarlo al PDF
         const pieChartElement = document.getElementById("pie-chart");
@@ -278,7 +284,7 @@ const VisualizarReporteDescuentos = () => {
                                         </div>
                                     </div>
                                     <div style={{ display: "flex", justifyContent: "center", margin: "10px 0"}}>
-                                        <Button variant="contained" color="primary" onClick={exportToPDF}>
+                                        <Button variant="contained" color="primary" onClick={exportToPDF} style={{ margin: '20px' }}>
                                             Exportar a PDF
                                         </Button>
                                     </div>

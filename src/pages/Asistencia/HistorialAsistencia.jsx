@@ -334,7 +334,7 @@ const Report = () => {
                                         </div>
                                     </div>
                                     {rol ? (
-                                        <Button variant="contained" color="primary" onClick={generatePDF}>
+                                        <Button variant="contained" color="primary" onClick={generatePDF} style={{ margin: '20px' }}>
                                             Exportar a PDF
                                         </Button>
                                     ) : (
