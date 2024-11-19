@@ -130,7 +130,7 @@ const generarPlanillas = async () => {
 
   const exportToExcel = (data, filename) => {
     const workBook = XLSX.utils.book_new();
-
+  
     // Define los títulos de las columnas
     const headers = [
       "ID",
@@ -146,7 +146,7 @@ const generarPlanillas = async () => {
       "Estado",
       "Sexo",
     ];
-
+  
     // Mapea los datos en un formato adecuado, asegurando que cada campo esté en orden
     const formattedData = data.map((item) => [
       item.id,
@@ -162,30 +162,35 @@ const generarPlanillas = async () => {
       item.estado,
       item.sexo,
     ]);
-
+  
     // Combina los encabezados y los datos
     const combinedData = [headers, ...formattedData];
-
+  
     // Crea la hoja de cálculo usando el formato combinado
     const workSheet = XLSX.utils.aoa_to_sheet(combinedData);
-    
-    // Estilo para la fila de encabezados (negrita)
+  
+    // Aplica estilos a los encabezados
     const headerStyle = {
-      font: { bold: true }, // Aplicar negrita
-      alignment: { horizontal: "center" }, // Centrado
+      font: { bold: true, sz: 14 }, // Negrita y tamaño 14
+      alignment: { horizontal: "center" }, // Centrado horizontal
     };
-
-    // Aplica el estilo a la primera fila (encabezados)
-    for (let col = 0; col < headers.length; col++) {
-      workSheet[XLSX.utils.encode_cell({ r: 0, c: col })].s = headerStyle; // Aplica el estilo a las celdas de la primera fila
-    }
-
+  
+    // Aplica el estilo a las celdas de la primera fila (encabezados)
+    headers.forEach((_, col) => {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
+      if (!workSheet[cellAddress]) {
+        workSheet[cellAddress] = { v: headers[col] }; // Asegúrate de que la celda exista
+      }
+      workSheet[cellAddress].s = headerStyle; // Aplica el estilo
+    });
+  
     // Añadir la hoja de cálculo al libro
     XLSX.utils.book_append_sheet(workBook, workSheet, "Usuarios");
-
+  
     // Escribe el archivo
     XLSX.writeFile(workBook, `${filename}.xlsx`);
   };
+  
 
   return (
     <>

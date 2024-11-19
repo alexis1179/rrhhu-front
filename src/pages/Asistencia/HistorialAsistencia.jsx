@@ -161,20 +161,21 @@ const Report = () => {
     // Función para obtener el nombre del empleado
     const fetchNombreEmpleado = async () => {
         const token = localStorage.getItem("token");
-        const headers = {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        };
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${token}`);
+        myHeaders.append("Content-Type", "application/json");
     
         try {
-            const response = await fetch(`${url}/usuarios/${userId}`, { headers });
+            const response = await fetch(url + "/usuarios"+ userId, { 
+                method:"GET",
+                headers: myHeaders });
             if (!response.ok) {
                 throw new Error("No se pudo obtener el nombre del empleado");
             }
     
             const data = await response.json();
             console.log("Respuesta de la API:", data); // Verifica la estructura de la respuesta
-            setNombreEmpleado(data.usuario.nombre|| "Nombre no disponible"); // Ajusta según la respuesta
+            setNombreEmpleado(data.nombre|| "Nombre no disponible"); // Ajusta según la respuesta
         } catch (error) {
             console.error("Error al obtener nombre del empleado:", error);
             setNombreEmpleado("Nombre no disponible");
@@ -223,15 +224,26 @@ const Report = () => {
         }
 
         const pdf = new jsPDF();
-        const titleText = `Historial de asistencia ${nombreEmpleado} - ${mesLetras} ${year}`;
+        const titleText = `Historial de asistencia`;
+        const nombre = `${nombreEmpleado}`;
+        const fecha =  `${mesLetras} ${year}`;
         pdf.setFontSize(20);
-
-        // Centrar el título
+        //Poner letra en negrita
+        pdf.setFont("helvetica", "bold");
+        // Centrar e insertar titulos
         const pageWidth = pdf.internal.pageSize.getWidth();
         const textWidth = pdf.getTextWidth(titleText);
         const xPosition = (pageWidth - textWidth) / 2;
         pdf.text(titleText, xPosition, 20);
+        const nombreWidth = pdf.getTextWidth(nombre);
+        const xPositionNombre = (pageWidth - nombreWidth) / 2;
+        pdf.text(nombre, xPositionNombre, 30);
+        const fechaWidth = pdf.getTextWidth(fecha);
+        const xPositionFecha = (pageWidth - fechaWidth) / 2;
+        pdf.text(fecha, xPositionFecha, 40);
 
+        // Poner letra en normal
+        pdf.setFont("helvetica", "normal");
         // Convertir el gráfico a imagen
         const pieChartElement = document.querySelector(".pie-chart-class");  // Ajusta el selector
         const canvas = await html2canvas(pieChartElement);
@@ -241,11 +253,11 @@ const Report = () => {
         const imgWidth = 175;
         const imgHeight = 100;
         const xPositionImage = (pageWidth - imgWidth) / 2;
-        pdf.addImage(imgData, "PNG", xPositionImage, 30, imgWidth, imgHeight);
+        pdf.addImage(imgData, "PNG", xPositionImage, 50, imgWidth, imgHeight);
 
         // Agregar la tabla
         pdf.autoTable({
-            startY: 140,
+            startY: 160,
             head: [['Tipo de horas', 'Cantidad (horas)']],
             body: [
                 ['Horas Diurnas', `${extraData.diurnas}`],
