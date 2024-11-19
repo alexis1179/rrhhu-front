@@ -190,55 +190,60 @@ const fetchHoras = async () => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
-const generatePDF = async () => {
-  const pdf = new jsPDF();
+    // Función para exportar la gráfica y datos a un archivo PDF
+    const generatePDF = async () => {
+      const pdf = new jsPDF();
 
-  // Convertir gráfico a imagen
-  const pieChartElement = document.getElementById("pie-chart");
-  const canvas = await html2canvas(pieChartElement);
-  const imgData = canvas.toDataURL("image/png");
-  // setear tamaño de la imagen
-  const imgWidth = 100;
-  const imgHeight = 100;
-  // centrar la imagen en la pagina
-const pdfWidth = pdf.internal.pageSize.getWidth();// ancho de la pagina
-  const xPosition = (pdfWidth - imgWidth) / 2;
-  // Agregamos imagen al documento
- pdf.addImage(imgData, "PNG", xPosition, 10, imgWidth, imgHeight);
+      // Configurar el título y centrarlo
+      const titleText = `Reporte de asistencia general - ${capitalizeFirstLetter(
+        dayjs().locale("es").month(mes - 1).format("MMMM")
+      )} ${displayYear}`;
+      pdf.setFontSize(20);
 
-  // Agregar titulo al documento
-  pdf.setFontSize(20);
-  pdf.text(
-    `Reporte de asistencia - ${capitalizeFirstLetter(
-      dayjs()
-        .locale("es")
-        .month(mes - 1)
-        .format("MMMM")
-    )} ${displayYear}`,
-    xPosition,
-    imgHeight + 20
-  );
+      // Obtener el ancho del texto
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const textWidth = pdf.getTextWidth(titleText);
 
-  // Crear tabla
-  pdf.setFontSize(12);
-  const tableData = [
-    ["Tipo de Horas", "Cantidad (horas)"],
-    ["Horas Diurnas", extraData.diurnas],
-    ["Horas Nocturnas", extraData.nocturnas],
-    ["Horas en Asueto", extraData.asueto],
-    ["Horas Diurnas Normales", extraData.diurnasNormales],
-  ];
-  // posicionar la tabla
-let startY = imgHeight + 30;
-  tableData.forEach((row, index) => {
-    const y = startY + index * 10;
-    pdf.text(row[0], 10, y);
-    pdf.text(row[1].toString(), 100, y);
-  });
+      // Calcular la posición 'x' para centrar el título
+      const xPositionTitle = (pageWidth - textWidth) / 2;
 
-  //generar pdf
-  pdf.save(`reporte_asistencia_${displayYear}_${mesLetras}.pdf`);
-};
+      // Agregar el título centrado
+      pdf.text(titleText, xPositionTitle, 20); // '20' es la posición vertical del título
+
+      // Convertir el gráfico a imagen
+      const pieChartElement = document.getElementById("pie-chart");
+      const canvas = await html2canvas(pieChartElement);
+      const imgData = canvas.toDataURL("image/png");
+
+      // Setear tamaño de la imagen
+      const imgWidth = 100;
+      const imgHeight = 100;
+
+      // Calcular la posición 'x' para centrar la imagen
+      const xPositionImage = (pageWidth - imgWidth) / 2;
+
+      // Agregar la imagen del gráfico centrada
+      pdf.addImage(imgData, "PNG", xPositionImage, 30, imgWidth, imgHeight);
+
+      // Agregar la tabla de datos después del gráfico
+      pdf.autoTable({
+        startY: 140, // Ajuste de la posición vertical para la tabla debajo del gráfico
+        head: [['Tipo de horas', 'Cantidad (horas)']],
+        body: [
+          ['Horas Diurnas', `$${extraData.diurnas}`],
+          ['Horas Nocturnas', `$${extraData.nocturnas}`],
+          ['Horas en Asueto', `$${extraData.asueto}`],
+          ['Horas Diurnas Normales', `$${extraData.diurnasNormales}`],
+        ],
+        styles: {
+          halign: 'center', // Alinea el texto horizontalmente al centro
+          valign: 'middle', // Alinea el texto verticalmente al centro
+        },
+      });
+
+      // Guardar el archivo PDF
+      pdf.save(`reporte_asistencia_${mesLetras}_${displayYear}.pdf`);
+    };
 
     return (
       <>

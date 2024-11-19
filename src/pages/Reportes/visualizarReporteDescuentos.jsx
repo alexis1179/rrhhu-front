@@ -18,7 +18,14 @@ import { set } from 'date-fns';
 import "../../Styles/HistorialAsistencia.css";
 import Loading from '../../Components/Loading';
 import { useNavigate, useParams } from "react-router-dom";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import html2canvas from "html2canvas";
+import {
+  Button
+} from "@mui/material";
 
+// Registrar los componentes de Chart.js para que se puedan usar en los gráficos
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -30,6 +37,7 @@ ChartJS.register(
 );
 
 const VisualizarReporteDescuentos = () => {
+    // Definición de estados iniciales
     const [fecha, setFecha] = React.useState(dayjs());  // Para obtener la fecha actual
     const [mes, setMes] = useState(fecha.month() + 1);  // Guardamos el mes actual
     const [mesLetras, setMesLetras] = useState(fecha.locale('es').format('MMMM'));  // Guardamos el mes actual en letras
@@ -45,6 +53,7 @@ const VisualizarReporteDescuentos = () => {
     const [afp, setAfp] = useState();
     const [renta, setRenta] = useState();
 
+    // Obtener el ID del usuario de la URL o del localStorage
     const user = localStorage.getItem("UserId");  // Obtenemos el ID del usuario logueado
     const { id } = useParams();
     if (id != null) {
@@ -53,6 +62,7 @@ const VisualizarReporteDescuentos = () => {
         var userId = user;
     }
 
+    // Función para obtener los datos de los usuarios
     const obtenerUsuarios = async () => {
         const idOcultos = [1, 2, 3];
         var usuarios;
@@ -72,6 +82,7 @@ const VisualizarReporteDescuentos = () => {
             console.log(error);
         }
 
+        // Si no hay usuarios, actualizamos los estados
         if (usuariosFiltrados.length === 0) {
             setData(false);
             setLoading(false);
@@ -110,6 +121,7 @@ const VisualizarReporteDescuentos = () => {
         setLoading(false);
     }
 
+    // Efecto para cargar los datos al montar el componente o cambiar mes/año
     useEffect(() => {
         setLoading(true);
         setDisplayYear(year);
@@ -151,6 +163,67 @@ const VisualizarReporteDescuentos = () => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
+    // Función para exportar la gráfica y datos a un archivo PDF
+    const exportToPDF = async () => {
+        const pdf = new jsPDF();
+    
+        // Configurar el título y centrarlo
+        const titleText = `Reporte de descuentos - ${capitalizeFirstLetter(
+            dayjs()
+                .locale("es")
+                .month(mes - 1)
+                .format("MMMM")
+        )} ${displayYear}`;
+        pdf.setFontSize(20);
+
+        // Obtener el ancho del texto
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const textWidth = pdf.getTextWidth(titleText);
+
+        // Calcular la posición 'x' para centrar el texto
+        const xPosition = (pageWidth - textWidth) / 2;
+
+        // Agregar el título centrado
+        pdf.text(titleText, xPosition, 20); // '20' es la posición vertical del título
+    
+        // Convertir gráfico a imagen y agregarlo al PDF
+        const pieChartElement = document.getElementById("pie-chart");
+        if (pieChartElement) {
+            const canvas = await html2canvas(pieChartElement);
+            const imgData = canvas.toDataURL("image/png");
+            const imgWidth = 100;
+            const imgHeight = 100;
+            const xPosition = (pdf.internal.pageSize.getWidth() - imgWidth) / 2; // Centrado horizontal del gráfico
+    
+            // Verificar que se generó correctamente y agregar imagen debajo del título
+            if (imgData) {
+                pdf.addImage(imgData, "PNG", xPosition, 30, imgWidth, imgHeight);
+            } else {
+                console.error("Error al generar la imagen del gráfico.");
+            }
+        } else {
+            console.error("El gráfico no se encuentra en el DOM.");
+        }
+    
+        // Agregar tabla de datos después del gráfico
+        pdf.autoTable({
+            startY: 140, // Ajuste de la posición vertical para la tabla debajo del gráfico
+            head: [['Descuento', 'Monto']],
+            body: [
+                ['Renta', `$${renta}`],
+                ['ISSS', `$${isss}`],
+                ['AFP', `$${afp}`],
+            ],
+            styles: {
+                halign: 'center', // Alinea el texto horizontalmente al centro
+                valign: 'middle', // Alinea el texto verticalmente al centro
+            },
+        });
+    
+        // Guardar el archivo PDF
+        pdf.save(`reporte_descuentos_${mesLetras}_${year}.pdf`);
+    };
+
     return (
         <>
             <Sidebar />
@@ -182,7 +255,7 @@ const VisualizarReporteDescuentos = () => {
                             {data ? (
                                 <div>
                                     <div style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}>
-                                        <div style={{ width: '40%', margin: '10px' }}>
+                                        <div id="pie-chart" style={{ width: '40%', margin: '10px' }}>
                                             <Pie data={pieData} options={options} />
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -204,8 +277,13 @@ const VisualizarReporteDescuentos = () => {
                                             </div>
                                         </div>
                                     </div>
+                                    <div style={{ display: "flex", justifyContent: "center", margin: "10px 0"}}>
+                                        <Button variant="contained" color="primary" onClick={exportToPDF}>
+                                            Exportar a PDF
+                                        </Button>
+                                    </div>
                                 </div>
-                            ) : <p>No hay registros</p>}
+                        ) : <p>No hay registros</p>}
                         </>
                     )}
             </div>

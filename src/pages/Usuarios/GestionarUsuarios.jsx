@@ -168,6 +168,19 @@ const generarPlanillas = async () => {
 
     // Crea la hoja de cálculo usando el formato combinado
     const workSheet = XLSX.utils.aoa_to_sheet(combinedData);
+    
+    // Estilo para la fila de encabezados (negrita)
+    const headerStyle = {
+      font: { bold: true }, // Aplicar negrita
+      alignment: { horizontal: "center" }, // Centrado
+    };
+
+    // Aplica el estilo a la primera fila (encabezados)
+    for (let col = 0; col < headers.length; col++) {
+      workSheet[XLSX.utils.encode_cell({ r: 0, c: col })].s = headerStyle; // Aplica el estilo a las celdas de la primera fila
+    }
+
+    // Añadir la hoja de cálculo al libro
     XLSX.utils.book_append_sheet(workBook, workSheet, "Usuarios");
 
     // Escribe el archivo

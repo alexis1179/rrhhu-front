@@ -18,6 +18,13 @@ import { set } from 'date-fns';
 import "../../Styles/HistorialAsistencia.css";
 import Loading from '../../Components/Loading';
 import { useNavigate, useParams } from "react-router-dom";
+let rol = localStorage.getItem("rol") == "ROLE_RRHH"; // Validar el rol
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import html2canvas from "html2canvas";
+import {
+  Button
+} from "@mui/material";
 
 ChartJS.register(
     CategoryScale,
@@ -40,7 +47,9 @@ const Report = () => {
     const [anios, setAnios] = useState([]);
     const [displayYear, setDisplayYear] = useState(year);
     const [resultados, setResultado] = useState(false);
+    const [nombreEmpleado, setNombreEmpleado] = useState(""); // Nuevo estado para el nombre del empleado
 
+    const userRole = localStorage.getItem("rol");
     const user = localStorage.getItem("UserId");  // Obtenemos el ID del usuario logueado
     const { id } = useParams();
     if (id != null) {
@@ -146,7 +155,31 @@ const Report = () => {
         setLoading(true);
         setDisplayYear(year);
         fetchHoras();
+        fetchNombreEmpleado();
     }, [mes, year]);
+
+    // Función para obtener el nombre del empleado
+    const fetchNombreEmpleado = async () => {
+        const token = localStorage.getItem("token");
+        const headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+    
+        try {
+            const response = await fetch(`${url}/usuarios/${userId}`, { headers });
+            if (!response.ok) {
+                throw new Error("No se pudo obtener el nombre del empleado");
+            }
+    
+            const data = await response.json();
+            console.log("Respuesta de la API:", data); // Verifica la estructura de la respuesta
+            setNombreEmpleado(data.usuario.nombre|| "Nombre no disponible"); // Ajusta según la respuesta
+        } catch (error) {
+            console.error("Error al obtener nombre del empleado:", error);
+            setNombreEmpleado("Nombre no disponible");
+        }
+    };
 
     // Configuración del gráfico de pastel
     const pieData = {
@@ -182,6 +215,54 @@ const Report = () => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
+    // Función para centrar y generar el PDF
+    const generatePDF = async () => {
+        if (!nombreEmpleado) {
+            console.log("Nombre del empleado no disponible");
+            return; // Asegura que el nombre esté disponible
+        }
+
+        const pdf = new jsPDF();
+        const titleText = `Historial de asistencia ${nombreEmpleado} - ${mesLetras} ${year}`;
+        pdf.setFontSize(20);
+
+        // Centrar el título
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const textWidth = pdf.getTextWidth(titleText);
+        const xPosition = (pageWidth - textWidth) / 2;
+        pdf.text(titleText, xPosition, 20);
+
+        // Convertir el gráfico a imagen
+        const pieChartElement = document.querySelector(".pie-chart-class");  // Ajusta el selector
+        const canvas = await html2canvas(pieChartElement);
+        const imgData = canvas.toDataURL("image/png");
+
+        // Centrar la imagen
+        const imgWidth = 100;
+        const imgHeight = 100;
+        const xPositionImage = (pageWidth - imgWidth) / 2;
+        pdf.addImage(imgData, "PNG", xPositionImage, 30, imgWidth, imgHeight);
+
+        // Agregar la tabla
+        pdf.autoTable({
+            startY: 140,
+            head: [['Tipo de horas', 'Cantidad (horas)']],
+            body: [
+                ['Horas Diurnas', `${extraData.diurnas}`],
+                ['Horas Nocturnas', `${extraData.nocturnas}`],
+                ['Horas en Asueto', `${extraData.asueto}`],
+                ['Horas Diurnas Normales', `${extraData.diurnasNormales}`],
+            ],
+            styles: {
+                halign: 'center',
+                valign: 'middle',
+            },
+        });
+
+        // Guardar el archivo con el nombre correcto
+        pdf.save(`historial_asistencia_${nombreEmpleado}_${mesLetras}_${year}.pdf`);
+    };
+
     return (
         <>
             <Sidebar />
@@ -213,7 +294,7 @@ const Report = () => {
                             {data ? (
                                 <div>
                                     <div style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}>
-                                        <div style={{ width: '40%', margin: '10px' }}>
+                                        <div class="pie-chart-class" style={{ width: '40%', margin: '10px' }}>
                                             <Pie data={pieData} options={options} />
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -239,6 +320,13 @@ const Report = () => {
                                             </div>
                                         </div>
                                     </div>
+                                    {rol ? (
+                                        <Button variant="contained" color="primary" onClick={generatePDF}>
+                                            Exportar a PDF
+                                        </Button>
+                                    ) : (
+                                        <></>
+                                    )}
                                 </div>
                             ) : <p>No hay registros</p>}
                         </>
