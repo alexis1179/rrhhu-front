@@ -216,7 +216,7 @@ const fetchHoras = async () => {
       const imgData = canvas.toDataURL("image/png");
 
       // Setear tamaño de la imagen
-      const imgWidth = 100;
+      const imgWidth = 175;
       const imgHeight = 100;
 
       // Calcular la posición 'x' para centrar la imagen

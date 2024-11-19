@@ -237,8 +237,8 @@ const Report = () => {
         const canvas = await html2canvas(pieChartElement);
         const imgData = canvas.toDataURL("image/png");
 
-        // Centrar la imagen
-        const imgWidth = 100;
+        // Centrar la imagen y su tamaño
+        const imgWidth = 175;
         const imgHeight = 100;
         const xPositionImage = (pageWidth - imgWidth) / 2;
         pdf.addImage(imgData, "PNG", xPositionImage, 30, imgWidth, imgHeight);

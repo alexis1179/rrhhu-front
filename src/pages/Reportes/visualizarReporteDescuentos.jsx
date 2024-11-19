@@ -191,7 +191,7 @@ const VisualizarReporteDescuentos = () => {
         if (pieChartElement) {
             const canvas = await html2canvas(pieChartElement);
             const imgData = canvas.toDataURL("image/png");
-            const imgWidth = 100;
+            const imgWidth = 175;
             const imgHeight = 100;
             const xPosition = (pdf.internal.pageSize.getWidth() - imgWidth) / 2; // Centrado horizontal del gráfico
     
