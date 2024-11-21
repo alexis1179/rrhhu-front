@@ -236,10 +236,10 @@ const fetchHoras = async () => {
         startY: 140, // Ajuste de la posición vertical para la tabla debajo del gráfico
         head: [['Tipo de horas', 'Cantidad (horas)']],
         body: [
-          ['Horas Diurnas', `$${extraData.diurnas}`],
-          ['Horas Nocturnas', `$${extraData.nocturnas}`],
-          ['Horas en Asueto', `$${extraData.asueto}`],
-          ['Horas Diurnas Normales', `$${extraData.diurnasNormales}`],
+          ['Horas Diurnas', `${extraData.diurnas}`],
+          ['Horas Nocturnas', `${extraData.nocturnas}`],
+          ['Horas en Asueto', `${extraData.asueto}`],
+          ['Horas Diurnas Normales', `${extraData.diurnasNormales}`],
         ],
         styles: {
           halign: 'center', // Alinea el texto horizontalmente al centro
