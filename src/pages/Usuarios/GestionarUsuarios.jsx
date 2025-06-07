@@ -74,7 +74,8 @@ const generarPlanillas = async () => {
     const idOcultos = [1, 2, 3];
     obtenerUsuarios().then((respuesta) => {
       setUsuarios(
-        respuesta.filter((usuario) => !idOcultos.includes(usuario.id))
+        //respuesta.filter((usuario) => !idOcultos.includes(usuario.id))
+        respuesta
       );
       setDataUsuarios(
         respuesta
@@ -103,13 +104,13 @@ const generarPlanillas = async () => {
       setUsuariosActivos(
         respuesta.filter(
           (usuario) =>
-            usuario.estado == "Activo" && !idOcultos.includes(usuario.id)
+            usuario.estado == "Activo"
         )
       );
       setFilteredUsuarios(
         respuesta.filter(
           (usuario) =>
-            usuario.estado == "Activo" && !idOcultos.includes(usuario.id)
+            usuario.estado == "Activo" 
         )
       );
     });
