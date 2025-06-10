@@ -465,6 +465,7 @@ function generatePassword() {
       Math.floor(Math.random() * characters.length)
     );
   }
+  console.log("Generated password: ", password);
   return password;
 }
 

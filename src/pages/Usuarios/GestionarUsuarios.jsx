@@ -33,7 +33,7 @@ export default function GestionarUsuarios() {
   const [usuariosActivos, setUsuariosActivos] = useState([]);
   const [searchText, setSearchText] = useState(""); // add a state for search text
   const [filteredUsuarios, setFilteredUsuarios] = useState([]); // add a state for filtered users
-  let rol = localStorage.getItem("rol") == "ROLE_ADMIN";
+  let rol = localStorage.getItem("rol") == "ROLE_ADMIN" || "ROLE_RRHH";
   //Fechas para API
   const [fecha, setFecha] = React.useState(dayjs()); // Para obtener la fecha actual
   const [mes, setMes] = useState(fecha.month() + 1); // Guardamos el mes actual
@@ -79,7 +79,7 @@ const generarPlanillas = async () => {
       );
       setDataUsuarios(
         respuesta
-          .filter((usuario) => !idOcultos.includes(usuario.id))
+          //.filter((usuario) => !idOcultos.includes(usuario.id))
           .map(
             ({
               password,
