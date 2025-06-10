@@ -4,7 +4,8 @@
     place-items: center;
     height: 100vh;
     width: 100vw;
-    background-color: rgb(20, 157, 128);
+    background-image: url("../image/bg-login.jpg");
+    background-size: cover;
 }
 
 .login-title{
@@ -17,6 +18,7 @@
 .login-form{
     display: flex;
     flex-direction: column;
+    align-items: center;
     background-color: rgba(255, 255, 255);
     border-radius: 8px;
     padding: 2em;
@@ -30,4 +32,5 @@
     text-align: center;
     color: black;
     font-weight: bold;
+    width: 100%;
 }

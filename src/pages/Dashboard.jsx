@@ -21,13 +21,19 @@ export default function Dashboard() {
                         </div>
                     </Grid>
                     <Grid item xs={4}>
-                        <InfoCard title="Sobre Nosotros" description="Somos una empresa fundada en 2014 por Ervin Domínguez, dedicada a la importación y venta de vehículos automotores. Ofrecemos vehículos usados en excelente estado y a precios competitivos, importados desde Estados Unidos y Corea."/>
+                        <InfoCard title="Sobre Nosotros" description="CoAgro nació en 1985 en medio de un contexto adverso, cuando un grupo de 
+pequeños agricultores de zonas rurales en San Salvador decidió unirse para hacer frente 
+a las difíciles condiciones generadas por la guerra civil salvadoreña"/>
                     </Grid>
                     <Grid item xs={4}>
-                        <InfoCard title="Nuestro Compromiso" description="Ofrecer vehículos accesibles y de calidad. Beneficiar a los salvadoreños. Generar empleos indirectos en el sector de grúas y talleres."/>
+                        <InfoCard title="Nuestro Compromiso" description="Contribuir al desarrollo integral de nuestros asociados mediante una agricultura 
+sostenible, inclusiva y orientada al comercio justo, generando bienestar económico, 
+social y ambiental para nuestras comunidades."/>
                     </Grid>
                     <Grid item xs={4}>
-                        <InfoCard title="Modalidades de Venta" description="Por encargo: Pago inicial en el exterior, pago complementario al recibir en aduana. Inversiones Propias: Compras financiadas, venta en aduana anunciada previamente en redes sociales."/>
+                        <InfoCard title="Nuestra Visión" description="Ser una cooperativa agrícola líder en El Salvador, reconocida por su compromiso 
+con la calidad, la sostenibilidad y el impacto positivo en el entorno rural, tanto a nivel 
+nacional como internacional."/>
                     </Grid>
                 </Grid>
             </div>

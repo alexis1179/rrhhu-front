@@ -16,7 +16,7 @@
 
 
 .dashboard-title{
-    background-color: #0b2447;
+    background-color: #1A1F2B;
     color: white;
     padding: 2%;
 }
@@ -24,7 +24,7 @@
 .dashboard-content{
     display:flex;
     flex-direction: column;
-    background-color: #0b2447;
+    background-color: #1A1F2B;
     color: white;
     padding: 5%;
     height: 300px;

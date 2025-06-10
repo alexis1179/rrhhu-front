@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Typography } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import "../Styles/Sidebar.css";
-import image from "../image/DSI logo 2.png";
+import image from "../image/Logo2.png";
 
 export default function Sidebar() {
   let navigate = useNavigate();

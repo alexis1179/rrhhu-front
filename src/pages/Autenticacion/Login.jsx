@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, TextField, Typography } from "@mui/material";
 import url from "../../backUrl";
 import "../../Styles/Login.css";
+import logo from  "../../image/logoCo.png";
 
 // Simulación de autenticación de usuario y contraseña
 async function auth(email, password) {
@@ -112,7 +113,9 @@ const Login = ({ setIsLogged }) => {
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
-        <p className="login-item">
+        <img
+          src={logo} className="logo"></img>
+        <p className="login-item title">
           Sistema Integral de Gestión de Personal y Nómina
         </p>
         <TextFieldComponent
