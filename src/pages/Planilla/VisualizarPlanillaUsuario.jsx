@@ -203,7 +203,7 @@ export default function VisualizarPlanillaUsuario() {
                 component="div"
                 style={{ margin: "10px 0 10px 0" }}
               >
-                Importaciones E y V
+                CoAgro SA de CV
               </Typography>
             </Grid>
 
